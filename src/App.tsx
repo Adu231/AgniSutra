@@ -20,6 +20,8 @@ import BlogPost from "./pages/BlogPost";
 import FAQ from "./pages/FAQ";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
+import SolutionDetail from "./pages/SolutionDetail";
+import Documentation from "./pages/Documentation";
 import NotFound from "./pages/NotFound";
 
 // Auth Pages
@@ -214,6 +216,8 @@ const App = () => (
               <Route path="/dashboard/admin/audit" element={<ProtectedRoute><AdminAuditLogs /></ProtectedRoute>} />
               <Route path="/dashboard/admin/subscriptions" element={<ProtectedRoute><AdminSubscriptions /></ProtectedRoute>} />
               <Route path="/dashboard/admin/subscriptions/payment" element={<ProtectedRoute><AdminPaymentPage /></ProtectedRoute>} />
+              <Route path="/solutions/:type" element={<SolutionDetail />} />
+              <Route path="/documentation" element={<Documentation />} />
 
               {/* ── Shared Pages ──────────────────────────────────────── */}
               <Route path="/dashboard/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

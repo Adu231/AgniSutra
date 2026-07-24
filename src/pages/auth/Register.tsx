@@ -14,6 +14,17 @@ const Register: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [agreed, setAgreed] = useState(false);
 
+  const generateCaptcha = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 5; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  };
+  const [captchaCode, setCaptchaCode] = useState(generateCaptcha());
+  const [captchaInput, setCaptchaInput] = useState('');
+
   const validate = () => {
     const errs: Record<string, string> = {};
     if (!form.name.trim()) errs.name = 'Full name is required';
@@ -22,6 +33,9 @@ const Register: React.FC = () => {
     if (form.password.length < 8) errs.password = 'Password must be at least 8 characters';
     if (form.password !== form.confirm) errs.confirm = 'Passwords do not match';
     if (!agreed) errs.terms = 'You must agree to the terms';
+    if (captchaInput.trim().toUpperCase() !== captchaCode) {
+      errs.captcha = 'Invalid CAPTCHA code. Please refresh or try again.';
+    }
     return errs;
   };
 
@@ -29,7 +43,13 @@ const Register: React.FC = () => {
     e.preventDefault();
     const errs = validate();
     setErrors(errs);
-    if (Object.keys(errs).length > 0) return;
+    if (Object.keys(errs).length > 0) {
+      if (errs.captcha) {
+        setCaptchaCode(generateCaptcha());
+        setCaptchaInput('');
+      }
+      return;
+    }
 
     setLoading(true);
     const result = await register({ name: form.name, email: form.email, password: form.password, organization: form.org });
@@ -191,6 +211,51 @@ const Register: React.FC = () => {
                 </span>
               </label>
               {errors.terms && <p className="text-red-500 text-xs mt-1">{errors.terms}</p>}
+            </div>
+
+            {/* CAPTCHA Challenge */}
+            <div className="space-y-2 p-3 bg-muted/20 border border-border rounded-xl">
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Security Verification</label>
+              <div className="flex gap-2 items-center">
+                <div 
+                  className="flex-grow h-10 bg-muted/50 border border-border rounded-lg flex items-center justify-center font-mono font-black tracking-widest text-base select-none relative overflow-hidden bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] bg-[size:8px_8px]"
+                  style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.15)' }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-red-500/5 to-transparent skew-y-12 scale-y-50" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-amber-500/5 to-transparent -skew-y-12 scale-y-50" />
+                  {captchaCode.split('').map((char, index) => (
+                    <span 
+                      key={index} 
+                      className="inline-block transform"
+                      style={{ 
+                        transform: `rotate(${Math.sin(index * 2) * 15}deg) translateY(${Math.cos(index) * 2}px)`,
+                        color: index % 2 === 0 ? 'rgb(239, 68, 68)' : 'rgb(245, 158, 11)'
+                      }}
+                    >
+                      {char}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCaptchaCode(generateCaptcha());
+                    setCaptchaInput('');
+                  }}
+                  className="px-3 h-10 rounded-lg border border-border hover:bg-muted text-[10px] font-bold uppercase transition-colors shrink-0"
+                >
+                  Refresh
+                </button>
+              </div>
+              <input
+                type="text"
+                required
+                className="input-field text-center font-mono font-bold uppercase tracking-widest text-xs h-9"
+                placeholder="Enter CAPTCHA Code"
+                value={captchaInput}
+                onChange={e => setCaptchaInput(e.target.value)}
+              />
+              {errors.captcha && <p className="text-red-500 text-xs mt-1">{errors.captcha}</p>}
             </div>
             <Button type="submit" className="w-full gradient-fire text-white border-0 hover:opacity-90 group h-11" disabled={loading}>
               {loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" /> : <ArrowRight className="w-4 h-4 mr-2" />}

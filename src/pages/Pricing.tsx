@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Check, ArrowRight, Zap, HelpCircle } from 'lucide-react';
 import { PRICING_PLANS } from '@/constants';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 const comparison = [
   { feature: 'Facilities', starter: '1', professional: '10', enterprise: 'Unlimited' },
@@ -26,6 +28,17 @@ const comparison = [
 const Pricing: React.FC = () => {
   const [annual, setAnnual] = useState(true);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  const handleSelectPlan = (planId: string) => {
+    if (isAuthenticated) {
+      toast.success(`Redirecting to upgrade checkout for ${planId.toUpperCase()} plan...`);
+      navigate(`/dashboard/admin/subscriptions/payment?org=DLF%20Commercial%20Properties&plan=${planId}`);
+    } else {
+      toast.info('Please register to select a plan.');
+      navigate('/register');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -94,8 +107,8 @@ const Pricing: React.FC = () => {
                         {annual && price > 0 && <p className={`text-xs mt-1 ${plan.highlighted ? 'text-white/70' : 'text-muted-foreground'}`}>Billed ${plan.price.annual * 12}/year</p>}
                       </div>
                       <Button
-                        className={`w-full mb-8 ${plan.highlighted ? 'bg-white text-red-600 hover:bg-white/90' : 'gradient-fire text-white border-0 hover:opacity-90'}`}
-                        onClick={() => navigate('/register')}
+                        className={`w-full mb-8 ${plan.highlighted ? 'bg-white text-red-600 hover:bg-white/90 font-semibold' : 'gradient-fire text-white border-0 hover:opacity-90 font-semibold'}`}
+                        onClick={() => handleSelectPlan(plan.id)}
                       >
                         {plan.id === 'free' ? 'Start Free' : 'Start Free Trial'} <ArrowRight className="w-4 h-4 ml-1" />
                       </Button>

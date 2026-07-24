@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Flame, Mail, Phone, MapPin, Twitter, Linkedin, Youtube, Github } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -19,17 +20,17 @@ const Footer: React.FC = () => {
     {
       title: 'Solutions',
       links: [
-        { label: 'Commercial Buildings', href: '/features' },
-        { label: 'Manufacturing Plants', href: '/features' },
-        { label: 'Healthcare Facilities', href: '/features' },
-        { label: 'Educational Institutes', href: '/features' },
-        { label: 'Fire Departments', href: '/features' },
+        { label: 'Commercial Buildings', href: '/solutions/commercial' },
+        { label: 'Manufacturing Plants', href: '/solutions/manufacturing' },
+        { label: 'Healthcare Facilities', href: '/solutions/healthcare' },
+        { label: 'Educational Institutes', href: '/solutions/educational' },
+        { label: 'Fire Departments', href: '/solutions/fire-departments' },
       ],
     },
     {
       title: 'Resources',
       links: [
-        { label: 'Documentation', href: '/contact' },
+        { label: 'Documentation', href: '/documentation' },
         { label: 'FAQ', href: '/faq' },
         { label: 'Contact Support', href: '/contact' },
         { label: 'Privacy Policy', href: '/privacy' },
@@ -72,18 +73,18 @@ const Footer: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-3 mt-6">
-              <a href="#" className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
+              <button onClick={() => toast.info('Follow AgniSutra on Twitter/X for active safety logs!')} className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
                 <Twitter className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
+              </button>
+              <button onClick={() => toast.info('Follow AgniSutra on LinkedIn for corporate security bulletins!')} className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
                 <Linkedin className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
+              </button>
+              <button onClick={() => toast.info('Subscribe to AgniSutra on YouTube for system setup guides!')} className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
                 <Youtube className="w-4 h-4" />
-              </a>
-              <a href="#" className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
+              </button>
+              <button onClick={() => toast.info('Explore AgniSutra open source integrations on GitHub!')} className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all">
                 <Github className="w-4 h-4" />
-              </a>
+              </button>
             </div>
           </div>
 
@@ -96,6 +97,11 @@ const Footer: React.FC = () => {
                   <li key={link.href}>
                     <Link
                       to={link.href}
+                      onClick={() => {
+                        if (window.location.pathname === link.href) {
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                      }}
                       className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {link.label}

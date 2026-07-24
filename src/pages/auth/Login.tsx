@@ -29,6 +29,17 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [activeDemo, setActiveDemo] = useState<string | null>(null);
 
+  const generateCaptcha = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let code = '';
+    for (let i = 0; i < 5; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  };
+  const [captchaCode, setCaptchaCode] = useState(generateCaptcha());
+  const [captchaInput, setCaptchaInput] = useState('');
+
   const handleDemoSelect = (account: typeof DEMO_ACCOUNTS[0]) => {
     setForm({ email: account.email, password: account.password });
     setActiveDemo(account.role);
@@ -40,6 +51,12 @@ const Login: React.FC = () => {
     setError('');
     if (!form.email || !form.password) {
       setError('Please enter your email and password.');
+      return;
+    }
+    if (captchaInput.trim().toUpperCase() !== captchaCode) {
+      setError('Invalid CAPTCHA code. Please refresh or try again.');
+      setCaptchaCode(generateCaptcha());
+      setCaptchaInput('');
       return;
     }
     setLoading(true);
@@ -64,12 +81,12 @@ const Login: React.FC = () => {
       {/* Left Panel — Branding */}
       <div className="hidden lg:flex lg:w-1/2 gradient-fire relative overflow-hidden flex-col justify-between p-12">
         <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-16">
+          <Link to="/" className="flex items-center gap-3 mb-16 hover:opacity-90 transition-opacity">
             <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
               <Flame className="w-5 h-5 text-white" />
             </div>
             <span className="text-white text-2xl font-bold" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>AgniSutra</span>
-          </div>
+          </Link>
           <h2 className="text-4xl font-black text-white leading-tight mb-4">
             India's Leading<br />Fire Safety Platform
           </h2>
@@ -99,14 +116,14 @@ const Login: React.FC = () => {
       <div className="flex-1 flex flex-col items-center justify-start lg:justify-center px-4 sm:px-8 py-8 overflow-y-auto">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
-          <div className="flex items-center justify-center gap-2 mb-8 lg:hidden">
+          <Link to="/" className="flex items-center justify-center gap-2 mb-8 lg:hidden hover:opacity-90 transition-opacity">
             <div className="w-9 h-9 rounded-xl gradient-fire flex items-center justify-center">
               <Flame className="w-5 h-5 text-white" />
             </div>
             <span className="text-xl font-bold" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
               <span className="gradient-fire-text">Agni</span>Sutra
             </span>
-          </div>
+          </Link>
 
           <h1 className="text-2xl font-black mb-1" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>Sign In</h1>
           <p className="text-muted-foreground text-sm mb-6">Access your role-based dashboard</p>
@@ -207,6 +224,50 @@ const Login: React.FC = () => {
               {activeDemo && (
                 <p className="text-xs text-muted-foreground mt-1">Demo password: <code className="font-mono bg-muted px-1 py-0.5 rounded">demo123</code></p>
               )}
+            </div>
+
+            {/* CAPTCHA Challenge */}
+            <div className="space-y-2 p-3 bg-muted/20 border border-border rounded-xl">
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Security Verification</label>
+              <div className="flex gap-2 items-center">
+                <div 
+                  className="flex-grow h-10 bg-muted/50 border border-border rounded-lg flex items-center justify-center font-mono font-black tracking-widest text-base select-none relative overflow-hidden bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] bg-[size:8px_8px]"
+                  style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.15)' }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-red-500/5 to-transparent skew-y-12 scale-y-50" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-amber-500/5 to-transparent -skew-y-12 scale-y-50" />
+                  {captchaCode.split('').map((char, index) => (
+                    <span 
+                      key={index} 
+                      className="inline-block transform"
+                      style={{ 
+                        transform: `rotate(${Math.sin(index * 2) * 15}deg) translateY(${Math.cos(index) * 2}px)`,
+                        color: index % 2 === 0 ? 'rgb(239, 68, 68)' : 'rgb(245, 158, 11)'
+                      }}
+                    >
+                      {char}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCaptchaCode(generateCaptcha());
+                    setCaptchaInput('');
+                  }}
+                  className="px-3 h-10 rounded-lg border border-border hover:bg-muted text-[10px] font-bold uppercase transition-colors shrink-0"
+                >
+                  Refresh
+                </button>
+              </div>
+              <input
+                type="text"
+                required
+                className="input-field text-center font-mono font-bold uppercase tracking-widest text-xs h-9"
+                placeholder="Enter CAPTCHA Code"
+                value={captchaInput}
+                onChange={e => setCaptchaInput(e.target.value)}
+              />
             </div>
 
             <Button
