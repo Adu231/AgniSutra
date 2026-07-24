@@ -17,6 +17,37 @@ const SubmitReports: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [reports, setReports] = useState(submittedReports);
 
+  const handleDownloadReport = (report: typeof reports[0]) => {
+    toast.success(`Downloading ${report.title}...`);
+    const content = `AGNISUTRA INSPECTION REPORT SUBMISSION
+==========================================
+Report ID: ${report.id}
+Title: ${report.title}
+Submission Date: ${report.date}
+Score: ${report.score}%
+Status: ${report.status.toUpperCase()}
+Checklist Items: ${report.items}
+Violations Detected: ${report.violations}
+
+Checklist Status Summary:
+-------------------------
+Inspection completed by certified Fire Inspector Suresh Kumar.
+Status has been verified and digitally signed.
+
+Authorized Signature:
+AgniSutra Fire Inspector Division
+`;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${report.id}_Submission_Report.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const handleSubmitReport = async () => {
     if (!draft.title || !draft.facility) { toast.error('Please fill required fields.'); return; }
     if (!draft.signature) { toast.error('Please add your digital signature to submit.'); return; }
@@ -149,7 +180,7 @@ const SubmitReports: React.FC = () => {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <div className={`text-sm font-bold px-2 py-0.5 rounded ${report.score >= 90 ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : report.score >= 75 ? 'text-orange-600 bg-orange-50 dark:bg-orange-900/20' : 'text-red-600 bg-red-50 dark:bg-red-900/20'}`}>{report.score}%</div>
                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusConfig[report.status]}`}>{report.status}</span>
-                  <Button size="sm" variant="outline" className="text-xs" onClick={() => toast.success('Report downloaded')}><Download className="w-3 h-3" /></Button>
+                  <Button size="sm" variant="outline" className="text-xs font-semibold hover:opacity-90" onClick={() => handleDownloadReport(report)}><Download className="w-3 h-3" /></Button>
                 </div>
               </div>
             ))}

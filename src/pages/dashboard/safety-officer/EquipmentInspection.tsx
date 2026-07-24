@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
-import { Search, Filter, QrCode, CheckCircle, AlertTriangle, Clock, MapPin, ChevronDown } from 'lucide-react';
+import { Search, Filter, QrCode, CheckCircle, AlertTriangle, Clock, MapPin, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -25,9 +25,18 @@ const statusConfig: Record<string, { cls: string; label: string }> = {
 const EquipmentInspection: React.FC = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [equipmentList, setEquipmentList] = useState(equipment);
   const [startingInspection, setStartingInspection] = useState<string | null>(null);
 
-  const filtered = equipment.filter(eq => {
+  // QR Scanner Modal State
+  const [showScanner, setShowScanner] = useState(false);
+
+  // Inspection Form Modal State
+  const [selectedInspectionEq, setSelectedInspectionEq] = useState<typeof equipment[0] | null>(null);
+  const [inspectionNotes, setInspectionNotes] = useState('');
+  const [inspectionStatus, setInspectionStatus] = useState('operational');
+
+  const filtered = equipmentList.filter(eq => {
     const matchSearch = eq.name.toLowerCase().includes(search.toLowerCase()) ||
       eq.location.toLowerCase().includes(search.toLowerCase()) ||
       eq.id.toLowerCase().includes(search.toLowerCase());
@@ -35,19 +44,50 @@ const EquipmentInspection: React.FC = () => {
     return matchSearch && matchStatus;
   });
 
-  const handleStartInspection = async (eq: typeof equipment[0]) => {
-    setStartingInspection(eq.id);
+  const handleStartInspection = (eq: typeof equipment[0]) => {
+    setSelectedInspectionEq(eq);
+    setInspectionStatus(eq.status);
+    setInspectionNotes('');
+  };
+
+  const handleSaveInspection = async () => {
+    if (!selectedInspectionEq) return;
+    setStartingInspection(selectedInspectionEq.id);
     await new Promise(r => setTimeout(r, 800));
+    
+    setEquipmentList(prev => prev.map(eq => 
+      eq.id === selectedInspectionEq.id 
+        ? { 
+            ...eq, 
+            status: inspectionStatus, 
+            lastInspected: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            nextDue: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          } 
+        : eq
+    ));
+    
     setStartingInspection(null);
-    toast.success(`Inspection started for ${eq.name}. Form opened.`);
+    setSelectedInspectionEq(null);
+    toast.success(`Inspection completed for ${selectedInspectionEq.name}. Status updated to ${statusConfig[inspectionStatus]?.label}.`);
+  };
+
+  const handleScanDemoQR = (eqId: string) => {
+    const targetEq = equipmentList.find(eq => eq.id === eqId);
+    if (targetEq) {
+      setShowScanner(false);
+      handleStartInspection(targetEq);
+      toast.info(`Scanned QR code for ${targetEq.name}`);
+    } else {
+      toast.error("Equipment not found.");
+    }
   };
 
   const counts = {
-    all: equipment.length,
-    operational: equipment.filter(e => e.status === 'operational').length,
-    critical: equipment.filter(e => e.status === 'critical').length,
-    maintenance: equipment.filter(e => e.status === 'maintenance').length,
-    offline: equipment.filter(e => e.status === 'offline').length,
+    all: equipmentList.length,
+    operational: equipmentList.filter(e => e.status === 'operational').length,
+    critical: equipmentList.filter(e => e.status === 'critical').length,
+    maintenance: equipmentList.filter(e => e.status === 'maintenance').length,
+    offline: equipmentList.filter(e => e.status === 'offline').length,
   };
 
   return (
@@ -59,7 +99,11 @@ const EquipmentInspection: React.FC = () => {
             <h2 className="text-xl font-bold">Equipment Inspection</h2>
             <p className="text-sm text-muted-foreground">Review and inspect all registered fire safety equipment</p>
           </div>
-          <Button className="gradient-fire text-white border-0 hover:opacity-90 flex-shrink-0" size="sm">
+          <Button
+            onClick={() => setShowScanner(true)}
+            className="gradient-fire text-white border-0 hover:opacity-90 flex-shrink-0"
+            size="sm"
+          >
             <QrCode className="w-4 h-4 mr-2" />Scan QR Code
           </Button>
         </div>
@@ -153,15 +197,10 @@ const EquipmentInspection: React.FC = () => {
                       <Button
                         size="sm"
                         variant={eq.status === 'critical' || eq.status === 'offline' ? 'default' : 'outline'}
-                        className={`text-xs ${eq.status === 'critical' || eq.status === 'offline' ? 'gradient-fire text-white border-0' : ''}`}
+                        className={`text-xs ${eq.status === 'critical' || eq.status === 'offline' ? 'gradient-fire text-white border-0 hover:opacity-90' : ''}`}
                         onClick={() => handleStartInspection(eq)}
-                        disabled={startingInspection === eq.id}
                       >
-                        {startingInspection === eq.id ? (
-                          <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          'Inspect'
-                        )}
+                        Inspect
                       </Button>
                     </td>
                   </tr>
@@ -176,11 +215,149 @@ const EquipmentInspection: React.FC = () => {
             </div>
           )}
           <div className="px-4 py-3 border-t border-border flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">Showing {filtered.length} of {equipment.length} equipment items</p>
-            <Button size="sm" variant="outline" className="text-xs">Export List</Button>
+            <p className="text-xs text-muted-foreground">Showing {filtered.length} of {equipmentList.length} equipment items</p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs"
+              onClick={() => toast.success("Equipment list exported as CSV successfully!")}
+            >
+              Export List
+            </Button>
           </div>
         </div>
       </div>
+
+      {/* Simulated QR Scanner Modal */}
+      {showScanner && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md p-6 shadow-2xl relative overflow-hidden">
+            <button
+              onClick={() => setShowScanner(false)}
+              className="absolute right-4 top-4 w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
+              <QrCode className="w-5 h-5 text-red-500" />
+              QR Code Scanner (Simulated)
+            </h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Point your camera at the AgniSutra equipment tag QR code. Select a demo tag below to simulate a scan.
+            </p>
+
+            {/* Simulated camera view */}
+            <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden mb-6 flex flex-col items-center justify-center border-2 border-red-500/50">
+              <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-red-500" />
+              <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-red-500" />
+              <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-red-500" />
+              <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-red-500" />
+              <div className="w-full h-[2px] bg-red-500 absolute top-1/2 left-0 animate-pulse shadow-[0_0_8px_#ef4444]" />
+              <QrCode className="w-16 h-16 text-white/20 animate-pulse" />
+              <span className="text-xs text-white/50 mt-2 font-mono">Camera Active...</span>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-xs font-semibold text-muted-foreground block mb-1">Simulate Scanning:</span>
+              <div className="grid grid-cols-1 gap-2">
+                {[
+                  { id: 'EQ-001', name: 'CO2 Extinguisher (Main Building)' },
+                  { id: 'EQ-003', name: 'Smoke Detector #14 (Warehouse B)' },
+                  { id: 'EQ-005', name: 'Exit Light EL-3B (Office Block C)' },
+                ].map(demo => (
+                  <button
+                    key={demo.id}
+                    onClick={() => handleScanDemoQR(demo.id)}
+                    className="w-full p-2.5 rounded-xl border border-border bg-muted/30 hover:bg-muted text-left text-xs font-medium transition-colors flex items-center justify-between"
+                  >
+                    <span>{demo.name}</span>
+                    <span className="text-[10px] font-mono bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold">{demo.id}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Equipment Inspection Modal */}
+      {selectedInspectionEq && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+            <button
+              onClick={() => setSelectedInspectionEq(null)}
+              className="absolute right-4 top-4 w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <h3 className="text-lg font-bold mb-1">Inspect Equipment</h3>
+            <p className="text-xs text-muted-foreground mb-4">Complete the compliance checks below for the selected tag.</p>
+
+            <div className="bg-muted/40 border border-border rounded-xl p-3.5 mb-5 space-y-2">
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Equipment:</span>
+                <span className="font-semibold">{selectedInspectionEq.name}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Serial / ID:</span>
+                <span className="font-mono font-semibold">{selectedInspectionEq.id} ({selectedInspectionEq.serial})</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Location:</span>
+                <span className="font-semibold">{selectedInspectionEq.location} ({selectedInspectionEq.floor})</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">Current Status</label>
+                <select
+                  className="input-field"
+                  value={inspectionStatus}
+                  onChange={e => setInspectionStatus(e.target.value)}
+                >
+                  <option value="operational">Operational</option>
+                  <option value="maintenance">Under Maintenance</option>
+                  <option value="critical">Critical (Fails Check)</option>
+                  <option value="offline">Offline / Absent</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">Comments & Observations</label>
+                <textarea
+                  className="input-field resize-none"
+                  rows={3}
+                  placeholder="e.g. pressure check green, safety pin in tact, no rust..."
+                  value={inspectionNotes}
+                  onChange={e => setInspectionNotes(e.target.value)}
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button
+                  variant="outline"
+                  className="flex-1 text-xs"
+                  onClick={() => setSelectedInspectionEq(null)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="flex-1 text-xs gradient-fire text-white border-0 hover:opacity-90"
+                  onClick={handleSaveInspection}
+                  disabled={startingInspection === selectedInspectionEq.id}
+                >
+                  {startingInspection === selectedInspectionEq.id ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
+                  ) : (
+                    'Submit Inspection'
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </RoleDashboardLayout>
   );
 };

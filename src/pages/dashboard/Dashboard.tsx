@@ -32,12 +32,12 @@ const upcomingInspections = [
 ];
 
 const metrics = [
-  { label: 'Compliance Score', value: '94%', change: '+6%', up: true, icon: Shield, color: 'text-green-500', bg: 'bg-green-500/10' },
-  { label: 'Equipment Healthy', value: '168/186', change: '90%', up: true, icon: Zap, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-  { label: 'Open Incidents', value: '3', change: '-2 this week', up: false, icon: AlertOctagon, color: 'text-red-500', bg: 'bg-red-500/10' },
-  { label: 'IoT Alerts Today', value: '7', change: '+2 vs yesterday', up: null, icon: Activity, color: 'text-orange-500', bg: 'bg-orange-500/10' },
-  { label: 'Inspections Done', value: '31', change: 'This month', up: true, icon: CheckCircle, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-  { label: 'Risk Score', value: 'Medium', change: 'Down from High', up: true, icon: AlertTriangle, color: 'text-yellow-600', bg: 'bg-yellow-500/10' },
+  { label: 'Compliance Score', value: '94%', change: '+6%', up: true, icon: Shield, color: 'text-green-600 dark:text-green-400', bg: 'bg-green-500/10' },
+  { label: 'Equipment Healthy', value: '168/186', change: '90%', up: true, icon: Zap, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500/10' },
+  { label: 'Open Incidents', value: '3', change: '-2 this week', up: false, icon: AlertOctagon, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500/10' },
+  { label: 'IoT Alerts Today', value: '7', change: '+2 vs yesterday', up: null, icon: Activity, color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-500/10' },
+  { label: 'Inspections Done', value: '31', change: 'This month', up: true, icon: CheckCircle, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-500/10' },
+  { label: 'Risk Score', value: 'Medium', change: 'Down from High', up: true, icon: AlertTriangle, color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-500/10' },
 ];
 
 const Dashboard: React.FC = () => {

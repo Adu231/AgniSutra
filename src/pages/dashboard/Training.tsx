@@ -37,9 +37,9 @@ const Training: React.FC = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: 'Courses Completed', value: completedCourses, icon: CheckCircle, color: 'text-green-500' },
-            { label: 'In Progress', value: courses.filter(c => c.status === 'in_progress').length, icon: Clock, color: 'text-blue-500' },
-            { label: 'Available', value: courses.filter(c => c.status === 'not_started').length, icon: BookOpen, color: 'text-orange-500' },
+            { label: 'Courses Completed', value: completedCourses, icon: CheckCircle, color: 'text-green-600 dark:text-green-400' },
+            { label: 'In Progress', value: courses.filter(c => c.status === 'in_progress').length, icon: Clock, color: 'text-blue-600 dark:text-blue-400' },
+            { label: 'Available', value: courses.filter(c => c.status === 'not_started').length, icon: BookOpen, color: 'text-orange-600 dark:text-orange-400' },
             { label: 'Certificates Earned', value: certCount, icon: Award, color: 'text-yellow-600 dark:text-yellow-400' },
           ].map(m => {
             const Icon = m.icon;

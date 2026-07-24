@@ -61,18 +61,18 @@ const FireDepartmentDashboard: React.FC = () => {
           </div>
           <div className="flex gap-3">
             <Button size="sm" className="bg-white text-amber-700 hover:bg-white/90 font-semibold text-xs" onClick={() => navigate('/dashboard/fire-department/incidents')}>View Full Details</Button>
-            <Button size="sm" className="bg-white/20 text-white hover:bg-white/30 text-xs border-white/30" variant="outline" onClick={() => navigate('/dashboard/fire-department/buildings')}>Building Info</Button>
-            <Button size="sm" className="bg-white/20 text-white hover:bg-white/30 text-xs border-white/30" variant="outline" onClick={() => navigate('/dashboard/fire-department/coordinate')}>Coordinate</Button>
+            <Button size="sm" className="bg-white/20 text-white hover:text-white hover:bg-white/30 text-xs border-white/30" variant="outline" onClick={() => navigate('/dashboard/fire-department/buildings')}>Building Info</Button>
+            <Button size="sm" className="bg-white/20 text-white hover:text-white hover:bg-white/30 text-xs border-white/30" variant="outline" onClick={() => navigate('/dashboard/fire-department/coordinate')}>Coordinate</Button>
           </div>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Incoming Calls', value: '2', color: 'text-red-500', bg: 'bg-red-500/10', icon: Siren },
-            { label: 'Units Available', value: `${units.filter(u => u.status === 'available').length}/${units.length}`, color: 'text-green-500', bg: 'bg-green-500/10', icon: Users },
-            { label: 'Avg Response', value: '6.8m', color: 'text-blue-500', bg: 'bg-blue-500/10', icon: Clock },
-            { label: 'Resolved Today', value: '12', color: 'text-purple-500', bg: 'bg-purple-500/10', icon: CheckCircle },
+            { label: 'Incoming Calls', value: '2', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500/10', icon: Siren },
+            { label: 'Units Available', value: `${units.filter(u => u.status === 'available').length}/${units.length}`, color: 'text-green-600 dark:text-green-400', bg: 'bg-green-500/10', icon: Users },
+            { label: 'Avg Response', value: '6.8m', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500/10', icon: Clock },
+            { label: 'Resolved Today', value: '12', color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-500/10', icon: CheckCircle },
           ].map(s => {
             const Icon = s.icon;
             return (

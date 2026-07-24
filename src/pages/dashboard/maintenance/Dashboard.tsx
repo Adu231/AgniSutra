@@ -61,10 +61,10 @@ const MaintenanceDashboard: React.FC = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Open Work Orders', value: '14', change: '3 urgent', color: 'text-orange-500', bg: 'bg-orange-500/10', icon: Wrench },
-            { label: 'Completed Today', value: '7', change: '↑ vs avg 5', color: 'text-green-500', bg: 'bg-green-500/10', icon: CheckCircle },
-            { label: 'Parts Low Stock', value: '2', change: 'CO2 cartridge, Battery', color: 'text-yellow-600', bg: 'bg-yellow-500/10', icon: AlertTriangle },
-            { label: 'Avg Fix Time', value: '2.4h', change: '↓ from 3.1h last week', color: 'text-blue-500', bg: 'bg-blue-500/10', icon: Clock },
+            { label: 'Open Work Orders', value: '14', change: '3 urgent', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-500/10', icon: Wrench },
+            { label: 'Completed Today', value: '7', change: '↑ vs avg 5', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-500/10', icon: CheckCircle },
+            { label: 'Parts Low Stock', value: '2', change: 'CO2 cartridge, Battery', color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-500/10', icon: AlertTriangle },
+            { label: 'Avg Fix Time', value: '2.4h', change: '↓ from 3.1h last week', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500/10', icon: Clock },
           ].map(s => {
             const Icon = s.icon;
             return (

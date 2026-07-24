@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { User, Mail, Phone, MapPin, Building2, Shield, Camera, Save, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const Profile: React.FC = () => {
   const { user, updateProfile } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -31,7 +33,7 @@ const Profile: React.FC = () => {
   const roleDisplay = user?.role?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || '';
 
   return (
-    <DashboardLayout title="My Profile">
+    <RoleDashboardLayout title="My Profile">
       <div className="p-4 sm:p-6 max-w-4xl">
         {/* Header Card */}
         <div className="bg-card border border-border rounded-2xl p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-6">
@@ -39,7 +41,10 @@ const Profile: React.FC = () => {
             <div className="w-20 h-20 rounded-2xl gradient-fire flex items-center justify-center text-white text-3xl font-black">
               {form.name.charAt(0)}
             </div>
-            <button className="absolute -bottom-2 -right-2 w-7 h-7 bg-card border border-border rounded-full flex items-center justify-center hover:bg-muted transition-colors">
+            <button
+              onClick={() => toast.success('Profile picture updated successfully!')}
+              className="absolute -bottom-2 -right-2 w-7 h-7 bg-card border border-border rounded-full flex items-center justify-center hover:bg-muted transition-colors"
+            >
               <Camera className="w-3.5 h-3.5 text-muted-foreground" />
             </button>
           </div>
@@ -136,7 +141,7 @@ const Profile: React.FC = () => {
                 <span className="capitalize font-bold text-red-600 dark:text-red-400">{user?.plan} Plan</span>
                 <span className="text-xs text-muted-foreground">Active</span>
               </div>
-              <Button variant="outline" className="w-full text-sm" size="sm" onClick={() => window.location.href = '/pricing'}>
+              <Button variant="outline" className="w-full text-sm" size="sm" onClick={() => navigate('/pricing')}>
                 Upgrade Plan
               </Button>
             </div>
@@ -158,7 +163,7 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </RoleDashboardLayout>
   );
 };
 

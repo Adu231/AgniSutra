@@ -51,10 +51,10 @@ const AdminDashboard: React.FC = () => {
         {/* Platform Metrics */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Total Organizations', value: '142', change: '+27 this month', color: 'text-blue-500', bg: 'bg-blue-500/10', icon: Building2, up: true },
-            { label: 'Active Users', value: '2,847', change: '+183 this week', color: 'text-purple-500', bg: 'bg-purple-500/10', icon: Users, up: true },
-            { label: 'Platform Uptime', value: '99.98%', change: 'Last 30 days', color: 'text-green-500', bg: 'bg-green-500/10', icon: Activity, up: null },
-            { label: 'MRR', value: '$42.3K', change: '+7% vs Jun', color: 'text-orange-500', bg: 'bg-orange-500/10', icon: CreditCard, up: true },
+            { label: 'Total Organizations', value: '142', change: '+27 this month', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500/10', icon: Building2, up: true },
+            { label: 'Active Users', value: '2,847', change: '+183 this week', color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-500/10', icon: Users, up: true },
+            { label: 'Platform Uptime', value: '99.98%', change: 'Last 30 days', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-500/10', icon: Activity, up: null },
+            { label: 'MRR', value: '$42.3K', change: '+7% vs Jun', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-500/10', icon: CreditCard, up: true },
           ].map(s => {
             const Icon = s.icon;
             return (

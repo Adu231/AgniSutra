@@ -50,9 +50,9 @@ const RiskAssessment: React.FC = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
             { label: 'Critical Risk', value: '1', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500/10' },
-            { label: 'High Risk', value: '1', color: 'text-orange-500', bg: 'bg-orange-500/10' },
+            { label: 'High Risk', value: '1', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-500/10' },
             { label: 'Medium Risk', value: '2', color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-500/10' },
-            { label: 'Low Risk', value: '1', color: 'text-green-500', bg: 'bg-green-500/10' },
+            { label: 'Low Risk', value: '1', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-500/10' },
           ].map(m => (
             <div key={m.label} className="metric-card">
               <div className={`w-10 h-10 ${m.bg} rounded-lg flex items-center justify-center mb-3`}>

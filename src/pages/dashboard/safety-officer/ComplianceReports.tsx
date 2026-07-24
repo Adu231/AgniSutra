@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
-import { FileText, Download, Plus, Filter, Calendar, CheckCircle, BarChart3, Shield } from 'lucide-react';
+import { FileText, Download, Plus, Filter, Calendar, CheckCircle, BarChart3, Shield, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -28,6 +28,15 @@ const ComplianceReports: React.FC = () => {
   const [dateTo, setDateTo] = useState('2025-07-31');
   const [generating, setGenerating] = useState(false);
   const [reports, setReports] = useState(existingReports);
+  const [showFilterBar, setShowFilterBar] = useState(false);
+  const [search, setSearch] = useState('');
+  const [filterType, setFilterType] = useState('all');
+
+  const filteredReports = reports.filter(r => {
+    const matchSearch = r.name.toLowerCase().includes(search.toLowerCase()) || r.id.toLowerCase().includes(search.toLowerCase());
+    const matchType = filterType === 'all' || r.type === filterType;
+    return matchSearch && matchType;
+  });
 
   const handleGenerate = async () => {
     setGenerating(true);
@@ -50,6 +59,34 @@ const ComplianceReports: React.FC = () => {
 
   const handleDownload = (report: typeof reports[0]) => {
     toast.success(`Downloading ${report.name}...`);
+    const content = `AGNISUTRA COMPLIANCE REPORT
+====================================
+Report ID: ${report.id}
+Report Name: ${report.name}
+Type: ${report.type}
+Facility: ${report.facility}
+Generated On: ${report.generated}
+Overall Score: ${report.score ? report.score + '%' : 'N/A'}
+Page Count: ${report.pages}
+
+Summary of Inspections & Audit:
+--------------------------------
+- All extinguishers checked and tags updated.
+- Exit and emergency light checks completed.
+- Smoke alarms tested and verified with AgniSutra IoT gateway.
+
+Authorized Signature:
+AgniSutra Compliance Command Center
+`;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${report.id}_Report.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -122,13 +159,47 @@ const ComplianceReports: React.FC = () => {
         </div>
 
         {/* Reports List */}
+        {showFilterBar && (
+          <div className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row gap-3 mb-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search reports by name or ID..."
+                className="input-field pl-10"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
+            <select
+              className="input-field w-auto"
+              value={filterType}
+              onChange={e => setFilterType(e.target.value)}
+            >
+              <option value="all">All Types</option>
+              <option value="Monthly Compliance">Monthly Compliance</option>
+              <option value="Equipment Audit">Equipment Audit</option>
+              <option value="Facility Audit">Facility Audit</option>
+              <option value="Regulatory">Regulatory</option>
+              <option value="Incident Analysis">Incident Analysis</option>
+            </select>
+          </div>
+        )}
+
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
           <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-            <h3 className="font-semibold text-sm">Generated Reports ({reports.length})</h3>
-            <Button size="sm" variant="outline" className="text-xs"><Filter className="w-3 h-3 mr-1" />Filter</Button>
+            <h3 className="font-semibold text-sm">Generated Reports ({filteredReports.length})</h3>
+            <Button
+              size="sm"
+              variant={showFilterBar ? 'default' : 'outline'}
+              className={`text-xs ${showFilterBar ? 'gradient-fire text-white border-0' : ''}`}
+              onClick={() => setShowFilterBar(!showFilterBar)}
+            >
+              <Filter className="w-3 h-3 mr-1" />Filter
+            </Button>
           </div>
           <div className="divide-y divide-border">
-            {reports.map(report => (
+            {filteredReports.map(report => (
               <div key={report.id} className="flex items-center gap-4 px-4 py-4 hover:bg-muted/30 transition-colors">
                 <div className="w-10 h-10 bg-red-50 dark:bg-red-900/20 rounded-xl flex items-center justify-center flex-shrink-0">
                   <FileText className="w-5 h-5 text-red-600 dark:text-red-400" />

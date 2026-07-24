@@ -45,10 +45,10 @@ const FacilityManagerDashboard: React.FC = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Overall Compliance', value: '91%', change: '+3% this month', color: 'text-green-500', bg: 'bg-green-500/10', icon: Shield },
-            { label: 'Active Team', value: '24', change: '6 inspectors, 8 techs', color: 'text-blue-500', bg: 'bg-blue-500/10', icon: Users },
-            { label: 'Total Assets', value: '397', change: '12 critical status', color: 'text-orange-500', bg: 'bg-orange-500/10', icon: Package },
-            { label: 'Budget Utilized', value: '68%', change: '₹4.2L of ₹6.2L', color: 'text-purple-500', bg: 'bg-purple-500/10', icon: DollarSign },
+            { label: 'Overall Compliance', value: '91%', change: '+3% this month', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-500/10', icon: Shield },
+            { label: 'Active Team', value: '24', change: '6 inspectors, 8 techs', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500/10', icon: Users },
+            { label: 'Total Assets', value: '397', change: '12 critical status', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-500/10', icon: Package },
+            { label: 'Budget Utilized', value: '68%', change: '₹4.2L of ₹6.2L', color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-500/10', icon: DollarSign },
           ].map(s => {
             const Icon = s.icon;
             return (

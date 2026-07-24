@@ -17,25 +17,30 @@ const EvidenceUpload: React.FC = () => {
   const [dragOver, setDragOver] = useState(false);
   const [newUpload, setNewUpload] = useState({ location: '', tags: '', description: '' });
   const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFileUrl, setSelectedFileUrl] = useState<string | null>(null);
 
   const handleUpload = async () => {
     if (!newUpload.location) { toast.error('Please specify the location.'); return; }
+    if (!selectedFileUrl) { toast.error('Please select or upload a photo first.'); return; }
     setUploading(true);
     await new Promise(r => setTimeout(r, 1200));
     const newEv = {
       id: `EV-${Date.now()}`,
-      name: `inspection_evidence_${Date.now()}.jpg`,
+      name: selectedFile?.name || `evidence_${Date.now()}.jpg`,
       type: 'image',
-      size: '1.1 MB',
+      size: selectedFile ? `${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB` : '1.1 MB',
       location: newUpload.location,
       tags: newUpload.tags.split(',').map(t => t.trim()).filter(Boolean),
       date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      url: `https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=200&auto=format&fit=crop&t=${Date.now()}`,
+      url: selectedFileUrl,
     };
     setEvidence(prev => [newEv, ...prev]);
     setUploading(false);
     setShowUploadForm(false);
     setNewUpload({ location: '', tags: '', description: '' });
+    setSelectedFile(null);
+    setSelectedFileUrl(null);
     toast.success('Evidence uploaded and geo-tagged successfully!');
   };
 
@@ -79,16 +84,48 @@ const EvidenceUpload: React.FC = () => {
               <button onClick={() => setShowUploadForm(false)} className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-muted transition-colors"><X className="w-4 h-4" /></button>
             </div>
             {/* Drop Zone */}
-            <div
-              onDragOver={e => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={e => { e.preventDefault(); setDragOver(false); toast.success('File ready to upload!'); }}
-              className={`border-2 border-dashed rounded-xl p-10 text-center transition-all cursor-pointer ${dragOver ? 'border-orange-400 bg-orange-50 dark:bg-orange-900/10' : 'border-border hover:border-orange-400 hover:bg-muted/30'}`}
-              onClick={() => toast.success('File picker opened')}
-            >
-              <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm font-medium">Drop files here or click to upload</p>
-              <p className="text-xs text-muted-foreground mt-1">JPG, PNG, PDF — Max 10MB per file</p>
+            <div className="relative">
+              {selectedFileUrl ? (
+                <div className="border border-border rounded-xl p-4 flex items-center justify-between bg-muted/20">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <img src={selectedFileUrl} alt="Preview" className="w-16 h-16 object-cover rounded-lg border" />
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold truncate">{selectedFile?.name}</p>
+                      <p className="text-xs text-muted-foreground">Ready to upload</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() => {
+                      setSelectedFile(null);
+                      setSelectedFileUrl(null);
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ) : (
+                <label className="border-2 border-dashed rounded-xl p-10 text-center transition-all cursor-pointer border-border hover:border-orange-400 hover:bg-muted/30 flex flex-col items-center justify-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={e => {
+                      if (e.target.files?.[0]) {
+                        const file = e.target.files[0];
+                        setSelectedFile(file);
+                        setSelectedFileUrl(URL.createObjectURL(file));
+                        toast.success('Photo selected!');
+                      }
+                    }}
+                  />
+                  <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm font-medium">Click to select or upload photo</p>
+                  <p className="text-xs text-muted-foreground mt-1">JPG, PNG, PDF — Max 10MB per file</p>
+                </label>
+              )}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>

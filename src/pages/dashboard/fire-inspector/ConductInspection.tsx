@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
-import { QrCode, CheckCircle, XCircle, AlertTriangle, Camera, Mic, ChevronRight, ChevronLeft, Check } from 'lucide-react';
+import { QrCode, CheckCircle, XCircle, AlertTriangle, Camera, Mic, ChevronRight, ChevronLeft, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useSearchParams } from 'react-router-dom';
 
 const steps = ['Setup', 'Checklist', 'Photos', 'Summary'];
 
@@ -30,9 +31,10 @@ const checklistItems = [
 ];
 
 const ConductInspection: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [step, setStep] = useState(0);
-  const [facility, setFacility] = useState('');
-  const [equipment, setEquipment] = useState('');
+  const [facility, setFacility] = useState(searchParams.get('facility') || '');
+  const [equipment, setEquipment] = useState(searchParams.get('equipment') || '');
   const [inspector, setInspector] = useState('Suresh Kumar');
   const [results, setResults] = useState<Record<string, 'pass' | 'fail' | null>>({});
   const [notes, setNotes] = useState<Record<string, string>>({});
@@ -40,11 +42,82 @@ const ConductInspection: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  // Photos & Voice recorder states
+  const [photos, setPhotos] = useState<Record<string, string>>({});
+  const [recording, setRecording] = useState(false);
+  const [voiceNote, setVoiceNote] = useState<string | null>(null);
+  const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
+  const [recordSeconds, setRecordSeconds] = useState(0);
+
+  const startRecording = () => {
+    setRecording(true);
+    setRecordSeconds(0);
+    const id = setInterval(() => {
+      setRecordSeconds(s => s + 1);
+    }, 1000);
+    setTimerId(id);
+    toast.info("Recording voice note...");
+  };
+
+  const stopRecording = () => {
+    if (timerId) {
+      clearInterval(timerId);
+      setTimerId(null);
+    }
+    setRecording(false);
+    setVoiceNote(`VoiceNote_${new Date().toLocaleTimeString().replace(/\s/g, '')}.wav`);
+    toast.success("Voice note recorded successfully!");
+  };
+
+  const handlePhotoUpload = (label: string, file: File) => {
+    const url = URL.createObjectURL(file);
+    setPhotos(prev => ({ ...prev, [label]: url }));
+    toast.success(`Photo uploaded for ${label}`);
+  };
+
   const allRequired = checklistItems.flatMap(c => c.items.filter(i => i.required));
   const completedRequired = allRequired.filter(i => results[i.id] !== undefined && results[i.id] !== null);
   const passCount = Object.values(results).filter(v => v === 'pass').length;
   const failCount = Object.values(results).filter(v => v === 'fail').length;
   const totalItems = checklistItems.flatMap(c => c.items).length;
+
+  const handleDownloadReport = () => {
+    toast.success('Downloading inspection report...');
+    const content = `AGNISUTRA INSPECTION REPORT
+====================================
+Equipment ID: ${equipment}
+Facility: ${facility}
+Inspector: ${inspector}
+Date: ${new Date().toLocaleString()}
+Score: ${Math.round((passCount / totalItems) * 100)}%
+
+Checklist Items Summary:
+------------------------
+Passed: ${passCount}
+Failed: ${failCount}
+Skipped: ${totalItems - passCount - failCount}
+
+Comments:
+${globalNote || 'No additional notes provided.'}
+
+Evidence Uploads:
+-----------------
+Photos uploaded: ${Object.keys(photos).join(', ') || 'None'}
+Voice note attached: ${voiceNote || 'None'}
+
+Authorized Signature:
+AgniSutra Fire Inspector Division
+`;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Inspection_Report_${equipment}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const handleSubmit = async () => {
     setSubmitting(true);
@@ -68,8 +141,8 @@ const ConductInspection: React.FC = () => {
             <div className="text-5xl font-black gradient-fire-text my-4" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>{score}%</div>
             <p className="text-sm text-muted-foreground mb-6">{passCount} passed · {failCount} failed · {totalItems - passCount - failCount} skipped</p>
             <div className="flex gap-3 justify-center">
-              <Button variant="outline" onClick={() => { setStep(0); setSubmitted(false); setResults({}); }}>New Inspection</Button>
-              <Button className="gradient-fire text-white border-0" onClick={() => toast.success('Report downloading...')}>Download Report</Button>
+              <Button variant="outline" onClick={() => { setStep(0); setSubmitted(false); setResults({}); setPhotos({}); setVoiceNote(null); }}>New Inspection</Button>
+              <Button className="gradient-fire text-white border-0 hover:opacity-90" onClick={handleDownloadReport}>Download Report</Button>
             </div>
           </div>
         </div>
@@ -186,15 +259,63 @@ const ConductInspection: React.FC = () => {
               <p className="text-sm text-muted-foreground mb-4">Attach photos and voice notes as evidence</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
                 {['Equipment Front View', 'Pressure Gauge', 'Serial Number Tag'].map(label => (
-                  <div key={label} className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-orange-400 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer bg-muted/30 hover:bg-orange-50 dark:hover:bg-orange-900/10" onClick={() => toast.success(`Photo captured: ${label}`)}>
-                    <Camera className="w-6 h-6 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground text-center px-2">{label}</p>
+                  <div key={label} className="relative aspect-square rounded-xl border-2 border-dashed border-border hover:border-orange-400 transition-colors bg-muted/30 overflow-hidden">
+                    {photos[label] ? (
+                      <div className="w-full h-full relative group">
+                        <img src={photos[label]} alt={label} className="w-full h-full object-cover" />
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setPhotos(p => { const copy = {...p}; delete copy[label]; return copy; }); }}
+                          className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 hover:bg-black/80 transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="w-full h-full flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-900/10">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={e => {
+                            if (e.target.files?.[0]) handlePhotoUpload(label, e.target.files[0]);
+                          }}
+                        />
+                        <Camera className="w-6 h-6 text-muted-foreground" />
+                        <p className="text-xs text-muted-foreground text-center px-2">{label}</p>
+                      </label>
+                    )}
                   </div>
                 ))}
               </div>
-              <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={() => toast.success('Voice note recording started...')}>
-                <Mic className="w-4 h-4" />Record Voice Note
-              </Button>
+              <div className="flex flex-wrap items-center gap-3">
+                {recording ? (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="flex items-center gap-2 animate-pulse"
+                    onClick={stopRecording}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+                    Stop ({recordSeconds}s)
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                    onClick={startRecording}
+                  >
+                    <Mic className="w-4 h-4" />
+                    {voiceNote ? 'Re-record Voice Note' : 'Record Voice Note'}
+                  </Button>
+                )}
+                {voiceNote && (
+                  <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg px-3 py-1.5 font-medium">
+                    <Check className="w-3.5 h-3.5 text-green-600" />
+                    {voiceNote} ({recordSeconds || 4}s)
+                  </div>
+                )}
+              </div>
             </div>
             <div className="bg-card border border-border rounded-2xl p-6">
               <h3 className="font-semibold mb-2">Additional Notes</h3>

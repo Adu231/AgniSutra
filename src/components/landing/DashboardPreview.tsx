@@ -21,10 +21,10 @@ const DashboardPreview: React.FC = () => {
   }, []);
 
   const metrics = [
-    { icon: CheckSquare, label: 'Compliance Score', value: '94%', change: '+6%', color: 'text-green-400' },
-    { icon: AlertOctagon, label: 'Open Incidents', value: '3', change: '-2', color: 'text-red-400' },
-    { icon: Thermometer, label: 'IoT Alerts', value: '7', change: 'Live', color: 'text-orange-400' },
-    { icon: Droplets, label: 'Equipment OK', value: '98%', change: 'Healthy', color: 'text-blue-400' },
+    { icon: CheckSquare, label: 'Compliance Score', value: '94%', change: '+6%', color: 'text-green-600 dark:text-green-400' },
+    { icon: AlertOctagon, label: 'Open Incidents', value: '3', change: '-2', color: 'text-red-600 dark:text-red-400' },
+    { icon: Thermometer, label: 'IoT Alerts', value: '7', change: 'Live', color: 'text-orange-600 dark:text-orange-400' },
+    { icon: Droplets, label: 'Equipment OK', value: '98%', change: 'Healthy', color: 'text-blue-600 dark:text-blue-400' },
   ];
 
   return (

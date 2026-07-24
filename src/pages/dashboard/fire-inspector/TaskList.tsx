@@ -100,7 +100,11 @@ const TaskList: React.FC = () => {
                 </div>
                 <div className="flex gap-2 flex-shrink-0">
                   {task.status !== 'completed' && (
-                    <Button size="sm" className="text-xs gradient-fire text-white border-0 hover:opacity-90" onClick={() => navigate('/dashboard/fire-inspector/inspect')}>
+                    <Button
+                      size="sm"
+                      className="text-xs gradient-fire text-white border-0 hover:opacity-90"
+                      onClick={() => navigate(`/dashboard/fire-inspector/inspect?facility=${encodeURIComponent(task.facility)}&equipment=${encodeURIComponent(task.id)}`)}
+                    >
                       <Play className="w-3 h-3 mr-1" />Start
                     </Button>
                   )}

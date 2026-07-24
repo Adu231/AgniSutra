@@ -38,6 +38,8 @@ const Navbar: React.FC = () => {
 
   const isActive = (href: string) => location.pathname === href;
 
+  const isHomeAndNotScrolled = location.pathname === '/' && !scrolled;
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -55,7 +57,7 @@ const Navbar: React.FC = () => {
             </div>
             <span className="text-xl font-bold" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
               <span className="gradient-fire-text">Agni</span>
-              <span className="text-foreground">Sutra</span>
+              <span className={isHomeAndNotScrolled ? 'text-white' : 'text-foreground'}>Sutra</span>
             </span>
           </Link>
 
@@ -67,7 +69,11 @@ const Navbar: React.FC = () => {
                 to={link.href}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isActive(link.href)
-                    ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20'
+                    ? isHomeAndNotScrolled
+                      ? 'text-red-400 bg-red-950/20'
+                      : 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20'
+                    : isHomeAndNotScrolled
+                    ? 'text-white/70 hover:text-white hover:bg-white/10'
                     : 'text-foreground/70 hover:text-foreground hover:bg-muted'
                 }`}
               >
@@ -81,7 +87,11 @@ const Navbar: React.FC = () => {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="w-9 h-9 rounded-lg flex items-center justify-center text-foreground/70 hover:text-foreground hover:bg-muted transition-all duration-200"
+              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                isHomeAndNotScrolled
+                  ? 'text-white/70 hover:text-white hover:bg-white/10'
+                  : 'text-foreground/70 hover:text-foreground hover:bg-muted'
+              }`}
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
@@ -93,19 +103,27 @@ const Navbar: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => navigate('/dashboard')}
-                  className="hidden md:flex gap-2"
+                  className={`hidden md:flex gap-2 ${
+                    isHomeAndNotScrolled
+                      ? 'text-white/90 hover:bg-white/10 hover:text-white'
+                      : 'text-foreground/90 hover:bg-muted hover:text-foreground'
+                  }`}
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   Dashboard
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted transition-colors">
+                    <button className={`flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors ${
+                      isHomeAndNotScrolled ? 'hover:bg-white/10' : 'hover:bg-muted'
+                    }`}>
                       <div className="w-8 h-8 rounded-full gradient-fire flex items-center justify-center text-white text-xs font-bold">
                         {user?.name?.charAt(0) || 'U'}
                       </div>
-                      <span className="hidden md:block text-sm font-medium max-w-[100px] truncate">{user?.name}</span>
-                      <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                      <span className={`hidden md:block text-sm font-medium max-w-[100px] truncate ${
+                        isHomeAndNotScrolled ? 'text-white' : 'text-foreground'
+                      }`}>{user?.name}</span>
+                      <ChevronDown className={`w-3 h-3 ${isHomeAndNotScrolled ? 'text-white/60' : 'text-muted-foreground'}`} />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
@@ -131,7 +149,16 @@ const Navbar: React.FC = () => {
               </>
             ) : (
               <div className="hidden md:flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/login')}
+                  className={
+                    isHomeAndNotScrolled
+                      ? 'text-white/90 hover:bg-white/10 hover:text-white'
+                      : 'text-foreground/90 hover:bg-muted hover:text-foreground'
+                  }
+                >
                   Sign In
                 </Button>
                 <Button
@@ -147,7 +174,11 @@ const Navbar: React.FC = () => {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden w-9 h-9 rounded-lg flex items-center justify-center hover:bg-muted transition-colors"
+              className={`md:hidden w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${
+                isHomeAndNotScrolled
+                  ? 'text-white hover:bg-white/10'
+                  : 'text-foreground hover:bg-muted'
+              }`}
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

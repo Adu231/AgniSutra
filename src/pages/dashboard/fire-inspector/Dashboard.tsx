@@ -52,10 +52,10 @@ const FireInspectorDashboard: React.FC = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Today's Tasks", value: '4', change: '1 critical', color: 'text-orange-500', bg: 'bg-orange-500/10', icon: ClipboardList },
-            { label: 'Completed This Week', value: '27', change: '↑ from 22 last week', color: 'text-green-500', bg: 'bg-green-500/10', icon: CheckCircle },
-            { label: 'Overdue Tasks', value: '1', change: 'From yesterday', color: 'text-red-500', bg: 'bg-red-500/10', icon: AlertTriangle },
-            { label: 'Avg Completion Time', value: '47m', change: '↓ 8min vs last month', color: 'text-blue-500', bg: 'bg-blue-500/10', icon: Clock },
+            { label: "Today's Tasks", value: '4', change: '1 critical', color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-500/10', icon: ClipboardList },
+            { label: 'Completed This Week', value: '27', change: '↑ from 22 last week', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-500/10', icon: CheckCircle },
+            { label: 'Overdue Tasks', value: '1', change: 'From yesterday', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500/10', icon: AlertTriangle },
+            { label: 'Avg Completion Time', value: '47m', change: '↓ 8min vs last month', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500/10', icon: Clock },
           ].map(s => {
             const Icon = s.icon;
             return (

@@ -37,10 +37,10 @@ const SafetyOfficerDashboard: React.FC = () => {
   }, []);
 
   const stats = [
-    { label: 'Compliance Score', value: '94%', change: '+6% this quarter', icon: Shield, color: 'text-green-500', bg: 'bg-green-500/10', up: true },
-    { label: 'Open Issues', value: '3', change: '1 critical pending', icon: AlertOctagon, color: 'text-red-500', bg: 'bg-red-500/10', up: false },
-    { label: 'Inspections Due', value: '8', change: 'Before month end', icon: Calendar, color: 'text-orange-500', bg: 'bg-orange-500/10', up: null },
-    { label: 'Equipment Critical', value: '2', change: 'Need immediate attention', icon: Zap, color: 'text-yellow-600', bg: 'bg-yellow-500/10', up: null },
+    { label: 'Compliance Score', value: '94%', change: '+6% this quarter', icon: Shield, color: 'text-green-600 dark:text-green-400', bg: 'bg-green-500/10', up: true },
+    { label: 'Open Issues', value: '3', change: '1 critical pending', icon: AlertOctagon, color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500/10', up: false },
+    { label: 'Inspections Due', value: '8', change: 'Before month end', icon: Calendar, color: 'text-orange-600 dark:text-orange-400', bg: 'bg-orange-500/10', up: null },
+    { label: 'Equipment Critical', value: '2', change: 'Need immediate attention', icon: Zap, color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-500/10', up: null },
   ];
 
   const statusStyle: Record<string, string> = {

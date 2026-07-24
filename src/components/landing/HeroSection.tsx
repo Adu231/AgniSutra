@@ -95,7 +95,7 @@ const HeroSection: React.FC = () => {
           <Button
             size="lg"
             variant="outline"
-            className="border-white/30 text-white hover:bg-white/10 hover:border-white/50 text-base px-8 py-4 h-auto backdrop-blur-sm group"
+            className="bg-transparent border-white/30 text-white hover:text-white hover:bg-white/10 hover:border-white/50 text-base px-8 py-4 h-auto backdrop-blur-sm group"
             onClick={() => navigate('/features')}
           >
             <Play className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />

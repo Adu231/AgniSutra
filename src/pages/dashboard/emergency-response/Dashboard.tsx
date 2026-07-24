@@ -71,10 +71,10 @@ const EmergencyResponseDashboard: React.FC = () => {
               <Button size="sm" className="bg-white text-red-700 hover:bg-white/90 font-semibold text-xs" onClick={() => navigate('/dashboard/emergency-response/navigation')}>
                 Navigate to Location
               </Button>
-              <Button size="sm" className="bg-white/20 text-white hover:bg-white/30 text-xs border-white/30" variant="outline" onClick={() => navigate('/dashboard/emergency-response/plans')}>
+              <Button size="sm" className="bg-white/20 text-white hover:text-white hover:bg-white/30 text-xs border-white/30" variant="outline" onClick={() => navigate('/dashboard/emergency-response/plans')}>
                 View Response Plan
               </Button>
-              <Button size="sm" className="bg-white/20 text-white hover:bg-white/30 text-xs border-white/30" variant="outline" onClick={() => navigate('/dashboard/emergency-response/close')}>
+              <Button size="sm" className="bg-white/20 text-white hover:text-white hover:bg-white/30 text-xs border-white/30" variant="outline" onClick={() => navigate('/dashboard/emergency-response/close')}>
                 Close Incident
               </Button>
             </div>
@@ -84,10 +84,10 @@ const EmergencyResponseDashboard: React.FC = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Active Incidents', value: '1', color: 'text-red-500', bg: 'bg-red-500/10', icon: AlertOctagon },
-            { label: 'Response Team', value: '8/10', color: 'text-green-500', bg: 'bg-green-500/10', icon: Users },
-            { label: 'Avg Response Time', value: '4.2m', color: 'text-blue-500', bg: 'bg-blue-500/10', icon: Clock },
-            { label: 'Resolved Today', value: '5', color: 'text-purple-500', bg: 'bg-purple-500/10', icon: CheckCircle },
+            { label: 'Active Incidents', value: '1', color: 'text-red-600 dark:text-red-400', bg: 'bg-red-500/10', icon: AlertOctagon },
+            { label: 'Response Team', value: '8/10', color: 'text-green-600 dark:text-green-400', bg: 'bg-green-500/10', icon: Users },
+            { label: 'Avg Response Time', value: '4.2m', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-500/10', icon: Clock },
+            { label: 'Resolved Today', value: '5', color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-500/10', icon: CheckCircle },
           ].map(s => {
             const Icon = s.icon;
             return (

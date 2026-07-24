@@ -44,7 +44,7 @@ const Equipment: React.FC = () => {
           {[
             { label: 'Total Equipment', value: summary.total, color: 'text-foreground' },
             { label: 'Operational', value: summary.operational, color: 'text-green-600 dark:text-green-400' },
-            { label: 'Under Maintenance', value: summary.maintenance, color: 'text-orange-500' },
+            { label: 'Under Maintenance', value: summary.maintenance, color: 'text-orange-600 dark:text-orange-400' },
             { label: 'Critical / Offline', value: summary.critical + equipment.filter(e => e.status === 'offline').length, color: 'text-red-600 dark:text-red-400' },
           ].map(s => (
             <div key={s.label} className="metric-card">

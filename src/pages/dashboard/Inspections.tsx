@@ -36,10 +36,10 @@ const Inspections: React.FC = () => {
         {/* Summary */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: 'Scheduled', value: inspections.filter(i => i.status === 'scheduled').length, color: 'text-blue-500' },
+            { label: 'Scheduled', value: inspections.filter(i => i.status === 'scheduled').length, color: 'text-blue-600 dark:text-blue-400' },
             { label: 'In Progress', value: inspections.filter(i => i.status === 'in_progress').length, color: 'text-yellow-600 dark:text-yellow-400' },
-            { label: 'Completed', value: inspections.filter(i => i.status === 'completed').length, color: 'text-green-500' },
-            { label: 'Overdue', value: inspections.filter(i => i.status === 'overdue').length, color: 'text-red-500' },
+            { label: 'Completed', value: inspections.filter(i => i.status === 'completed').length, color: 'text-green-600 dark:text-green-400' },
+            { label: 'Overdue', value: inspections.filter(i => i.status === 'overdue').length, color: 'text-red-600 dark:text-red-400' },
           ].map(s => (
             <div key={s.label} className="metric-card">
               <div className={`text-3xl font-black ${s.color}`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>{s.value}</div>

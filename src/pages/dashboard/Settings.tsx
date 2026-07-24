@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import DashboardLayout from '@/components/layout/DashboardLayout';
+import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Bell, Shield, Moon, Sun, Globe, Key, Eye, EyeOff, CheckCircle, Save, Lock } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -48,7 +48,7 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <DashboardLayout title="Settings">
+    <RoleDashboardLayout title="Settings">
       <div className="p-4 sm:p-6 max-w-3xl space-y-6">
 
         {/* Appearance */}
@@ -182,7 +182,12 @@ const Settings: React.FC = () => {
           <h3 className="font-semibold mb-2 text-red-600 dark:text-red-400">Danger Zone</h3>
           <p className="text-sm text-muted-foreground mb-4">These actions are irreversible. Please proceed with caution.</p>
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button variant="outline" size="sm" className="border-red-200 dark:border-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-red-200 dark:border-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+              onClick={() => toast.success("Data export initiated! A download link will be sent to your email.")}
+            >
               Export All Data
             </Button>
             <Button variant="outline" size="sm" className="border-red-200 dark:border-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20" onClick={() => toast.error('Account deletion requires contacting support.')}>
@@ -191,7 +196,7 @@ const Settings: React.FC = () => {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </RoleDashboardLayout>
   );
 };
 
