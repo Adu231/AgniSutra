@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
-import { Package, Search, Filter, Building2, Wrench, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Package, Search, Filter, Building2, Wrench, AlertTriangle, CheckCircle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -31,6 +31,40 @@ const AssetManagement: React.FC = () => {
   const [search, setSearch] = useState('');
   const [facilityFilter, setFacilityFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedAsset, setSelectedAsset] = useState<typeof assets[0] | null>(null);
+
+  const handleExportCSV = () => {
+    toast.success('Generating asset CSV export...');
+    const headers = ['Asset ID', 'Name', 'Facility', 'Location', 'Type', 'Status', 'Condition', 'Install Date', 'Warranty Expiry', 'Last Service', 'Next Service', 'Value (INR)'];
+    const rows = filtered.map(a => [
+      a.id,
+      a.name,
+      a.facility,
+      a.location,
+      a.type,
+      a.status,
+      a.condition,
+      a.installDate,
+      a.warrantyExpiry,
+      a.lastService,
+      a.nextService,
+      a.value.toString()
+    ]);
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(r => r.map(val => `"${val.replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Asset_Inventory_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const filtered = assets.filter(a => {
     const matchSearch = a.name.toLowerCase().includes(search.toLowerCase()) || a.id.toLowerCase().includes(search.toLowerCase());
@@ -49,7 +83,7 @@ const AssetManagement: React.FC = () => {
             <h2 className="text-xl font-bold">Asset Management</h2>
             <p className="text-sm text-muted-foreground">Full inventory of fire safety assets across all facilities</p>
           </div>
-          <Button size="sm" variant="outline" className="text-xs" onClick={() => toast.success('Exporting asset inventory...')}>Export CSV</Button>
+          <Button size="sm" variant="outline" className="text-xs font-semibold hover:opacity-90" onClick={handleExportCSV}>Export CSV</Button>
         </div>
 
         {/* Summary */}
@@ -126,7 +160,7 @@ const AssetManagement: React.FC = () => {
                     <td className="px-4 py-3 text-xs text-muted-foreground hidden lg:table-cell">{asset.nextService}</td>
                     <td className="px-4 py-3 text-xs font-semibold hidden lg:table-cell">₹{asset.value.toLocaleString()}</td>
                     <td className="px-4 py-3">
-                      <Button size="sm" variant="outline" className="text-xs" onClick={() => toast.success(`Asset ${asset.id} details opened`)}>View</Button>
+                      <Button size="sm" variant="outline" className="text-xs font-semibold hover:opacity-90" onClick={() => setSelectedAsset(asset)}>View</Button>
                     </td>
                   </tr>
                 ))}
@@ -134,6 +168,82 @@ const AssetManagement: React.FC = () => {
             </table>
           </div>
         </div>
+        {/* Asset Details Modal */}
+        {selectedAsset && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-card border border-border rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 text-left">
+              <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20">
+                <div>
+                  <h3 className="font-bold text-base flex items-center gap-2">
+                    <Package className="w-4 h-4 text-orange-500" />
+                    Asset Details
+                  </h3>
+                  <p className="text-xs text-muted-foreground font-mono">{selectedAsset.id}</p>
+                </div>
+                <button
+                  onClick={() => setSelectedAsset(null)}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <p className="text-xs text-muted-foreground">Asset Name</p>
+                    <p className="font-semibold text-sm">{selectedAsset.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Facility</p>
+                    <p className="text-sm font-semibold">{selectedAsset.facility}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Location</p>
+                    <p className="text-sm font-semibold">{selectedAsset.location}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Type</p>
+                    <p className="text-sm font-semibold">{selectedAsset.type}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium text-orange-600 font-bold">Asset Value</p>
+                    <p className="text-sm font-black">₹{selectedAsset.value.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Current Status</p>
+                    <span className={`inline-block px-2 py-0.5 mt-1 rounded text-xs font-semibold ${statusColors[selectedAsset.status]}`}>{selectedAsset.status}</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground font-medium">Condition</p>
+                    <span className={`inline-block px-2 py-0.5 mt-1 rounded text-xs font-semibold ${conditionColors[selectedAsset.condition]}`}>{selectedAsset.condition}</span>
+                  </div>
+                </div>
+
+                <div className="border-t border-border pt-4 space-y-3">
+                  <h4 className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Lifecycle & Audits</h4>
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="flex justify-between border-b border-border/50 pb-1.5"><span className="text-muted-foreground">Installed:</span><span className="font-medium">{selectedAsset.installDate}</span></div>
+                    <div className="flex justify-between border-b border-border/50 pb-1.5"><span className="text-muted-foreground">Warranty Expiry:</span><span className="font-medium">{selectedAsset.warrantyExpiry}</span></div>
+                    <div className="flex justify-between border-b border-border/50 pb-1.5"><span className="text-muted-foreground">Last Service:</span><span className="font-medium">{selectedAsset.lastService}</span></div>
+                    <div className="flex justify-between border-b border-border/50 pb-1.5"><span className="text-muted-foreground">Next Service:</span><span className="font-medium">{selectedAsset.nextService}</span></div>
+                  </div>
+                </div>
+
+                <div className="border-t border-border pt-4 space-y-2">
+                  <h4 className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Activity History Log</h4>
+                  <div className="relative border-l border-border pl-4 space-y-3 text-xs py-1">
+                    <div className="relative"><div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-card" /><span className="text-muted-foreground">Jul 2025:</span> Calibrated and tagged by Suresh Kumar. Status set to operational.</div>
+                    <div className="relative"><div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-blue-500 border-2 border-card" /><span className="text-muted-foreground">May 2024:</span> Routine battery inspection completed.</div>
+                    <div className="relative"><div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-orange-500 border-2 border-card" /><span className="text-muted-foreground">Mar 2022:</span> Initial installation and registration.</div>
+                  </div>
+                </div>
+              </div>
+              <div className="px-6 py-3 border-t border-border flex justify-end bg-muted/20">
+                <Button size="sm" onClick={() => setSelectedAsset(null)}>Close</Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </RoleDashboardLayout>
   );

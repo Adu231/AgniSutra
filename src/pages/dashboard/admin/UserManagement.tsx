@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
-import { Search, Users, Shield, Key, Trash2, UserCheck, UserX } from 'lucide-react';
+import { Search, Users, Shield, Key, Trash2, UserCheck, UserX, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -28,7 +28,50 @@ const roleConfig: Record<string, string> = {
 const UserManagement: React.FC = () => {
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
-  const [userList, setUserList] = useState(users);
+  const [userList, setUserList] = useState([
+    { id: 'USR-001', name: 'Arjun Mehta', email: 'officer@agnisutra.demo', role: 'safety_officer', org: 'DLF Commercial Properties', lastLogin: 'Today 14:32', status: 'active', plan: 'enterprise' },
+    { id: 'USR-002', name: 'Suresh Kumar', email: 'inspector@agnisutra.demo', role: 'fire_inspector', org: 'Maharashtra Fire Services', lastLogin: 'Today 11:15', status: 'active', plan: 'professional' },
+    { id: 'USR-003', name: 'Rajesh Singh', email: 'technician@agnisutra.demo', role: 'maintenance_technician', org: 'DLF Commercial Properties', lastLogin: 'Today 09:45', status: 'active', plan: 'enterprise' },
+    { id: 'USR-004', name: 'Priya Sharma', email: 'manager@agnisutra.demo', role: 'facility_manager', org: 'Apollo Hospitals Group', lastLogin: 'Today 13:20', status: 'active', plan: 'enterprise' },
+    { id: 'USR-005', name: 'Vikram Nair', email: 'emergency@agnisutra.demo', role: 'emergency_responder', org: 'Tata Steel Manufacturing', lastLogin: 'Today 10:00', status: 'active', plan: 'professional' },
+    { id: 'USR-006', name: 'Insp. Ramesh Patil', email: 'firedept@agnisutra.demo', role: 'fire_department', org: 'Mumbai Fire Brigade', lastLogin: 'Today 08:30', status: 'active', plan: 'professional' },
+    { id: 'USR-007', name: 'Kavitha Admin', email: 'admin@agnisutra.demo', role: 'admin', org: 'AgniSutra Technologies', lastLogin: 'Today 15:00', status: 'active', plan: 'enterprise' },
+    { id: 'USR-008', name: 'Deactivated User', email: 'old@example.com', role: 'safety_officer', org: 'Test Org', lastLogin: '2 months ago', status: 'inactive', plan: 'free' },
+  ]);
+
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [editingUser, setEditingUser] = useState<typeof userList[0] | null>(null);
+  const [inviteForm, setInviteForm] = useState({ name: '', email: '', role: 'safety_officer', org: '' });
+
+  const handleInvite = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteForm.name || !inviteForm.email) {
+      toast.error('Name and Email are required.');
+      return;
+    }
+    const invited = {
+      id: `USR-0${userList.length + 1}`,
+      name: inviteForm.name,
+      email: inviteForm.email,
+      role: inviteForm.role,
+      org: inviteForm.org || 'DLF Commercial Properties',
+      lastLogin: 'Never',
+      status: 'active',
+      plan: 'professional'
+    };
+    setUserList(prev => [...prev, invited]);
+    setShowInviteModal(false);
+    setInviteForm({ name: '', email: '', role: 'safety_officer', org: '' });
+    toast.success(`User "${invited.name}" invited successfully!`);
+  };
+
+  const handleEditSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    setUserList(prev => prev.map(u => u.id === editingUser.id ? editingUser : u));
+    setEditingUser(null);
+    toast.success('User updated successfully!');
+  };
 
   const filtered = userList.filter(u => {
     const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
@@ -49,7 +92,7 @@ const UserManagement: React.FC = () => {
             <h2 className="text-xl font-bold">User Management</h2>
             <p className="text-sm text-muted-foreground">Manage all platform users, roles, and access permissions</p>
           </div>
-          <Button size="sm" className="gradient-fire text-white border-0 hover:opacity-90" onClick={() => toast.success('Invite user form opened')}>+ Invite User</Button>
+          <Button size="sm" className="gradient-fire text-white border-0 hover:opacity-90" onClick={() => setShowInviteModal(true)}>+ Invite User</Button>
         </div>
 
         {/* Summary */}
@@ -127,8 +170,8 @@ const UserManagement: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
-                        <Button size="sm" variant="outline" className="text-xs" onClick={() => toast.success('User details opened')}>Edit</Button>
-                        <Button size="sm" variant="outline" className="text-xs" onClick={() => toast.success('Password reset sent!')}><Key className="w-3 h-3" /></Button>
+                        <Button size="sm" variant="outline" className="text-xs font-semibold hover:opacity-90" onClick={() => setEditingUser(user)}>Edit</Button>
+                        <Button size="sm" variant="outline" className="text-xs font-semibold hover:opacity-90" onClick={() => toast.success(`Password reset link dispatched to ${user.email}`)}><Key className="w-3 h-3" /></Button>
                         <Button
                           size="sm"
                           variant="outline"
@@ -149,6 +192,152 @@ const UserManagement: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Invite User Modal */}
+      {showInviteModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 text-left">
+            <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20">
+              <h3 className="font-bold text-base">Invite New Platform User</h3>
+              <button
+                onClick={() => setShowInviteModal(false)}
+                className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleInvite}>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Arjun Mehta"
+                    className="input-field text-sm"
+                    value={inviteForm.name}
+                    onChange={e => setInviteForm(p => ({ ...p, name: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="name@organization.com"
+                    className="input-field text-sm"
+                    value={inviteForm.email}
+                    onChange={e => setInviteForm(p => ({ ...p, email: e.target.value }))}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">Platform Role</label>
+                    <select
+                      className="input-field text-sm"
+                      value={inviteForm.role}
+                      onChange={e => setInviteForm(p => ({ ...p, role: e.target.value }))}
+                    >
+                      <option value="safety_officer">Safety Officer</option>
+                      <option value="fire_inspector">Fire Inspector</option>
+                      <option value="maintenance_technician">Maintenance Tech</option>
+                      <option value="facility_manager">Facility Manager</option>
+                      <option value="emergency_responder">Emergency Responder</option>
+                      <option value="fire_department">Fire Dept Officer</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">Organization</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. DLF Properties"
+                      className="input-field text-sm"
+                      value={inviteForm.org}
+                      onChange={e => setInviteForm(p => ({ ...p, org: e.target.value }))}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="px-6 py-3 border-t border-border flex justify-end gap-2 bg-muted/20">
+                <Button type="button" size="sm" variant="outline" onClick={() => setShowInviteModal(false)}>Cancel</Button>
+                <Button type="submit" size="sm" className="gradient-fire text-white border-0">Send Invitation</Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 text-left">
+            <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20">
+              <h3 className="font-bold text-base">Edit User Details</h3>
+              <button
+                onClick={() => setEditingUser(null)}
+                className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleEditSave}>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    className="input-field text-sm"
+                    value={editingUser.name}
+                    onChange={e => setEditingUser(p => p ? ({ ...p, name: e.target.value }) : null)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    className="input-field text-sm"
+                    value={editingUser.email}
+                    onChange={e => setEditingUser(p => p ? ({ ...p, email: e.target.value }) : null)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">Platform Role</label>
+                    <select
+                      className="input-field text-sm"
+                      value={editingUser.role}
+                      onChange={e => setEditingUser(p => p ? ({ ...p, role: e.target.value }) : null)}
+                    >
+                      <option value="admin">Admin</option>
+                      <option value="safety_officer">Safety Officer</option>
+                      <option value="fire_inspector">Fire Inspector</option>
+                      <option value="maintenance_technician">Maintenance Tech</option>
+                      <option value="facility_manager">Facility Manager</option>
+                      <option value="emergency_responder">Emergency Responder</option>
+                      <option value="fire_department">Fire Dept Officer</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">Organization</label>
+                    <input
+                      type="text"
+                      className="input-field text-sm"
+                      value={editingUser.org}
+                      onChange={e => setEditingUser(p => p ? ({ ...p, org: e.target.value }) : null)}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="px-6 py-3 border-t border-border flex justify-end gap-2 bg-muted/20">
+                <Button type="button" size="sm" variant="outline" onClick={() => setEditingUser(null)}>Cancel</Button>
+                <Button type="submit" size="sm" className="gradient-fire text-white border-0">Save Changes</Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </RoleDashboardLayout>
   );
 };

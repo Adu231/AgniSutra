@@ -71,7 +71,6 @@ import FacilityTeamCoordination from "./pages/dashboard/facility-manager/TeamCoo
 // ── Emergency Response Dashboard ──────────────────────────────────────────────
 import EmergencyResponseDashboard from "./pages/dashboard/emergency-response/Dashboard";
 import EmergencyAlertCenter from "./pages/dashboard/emergency-response/AlertCenter";
-import EmergencyLiveNavigation from "./pages/dashboard/emergency-response/LiveNavigation";
 import EmergencyResponsePlan from "./pages/dashboard/emergency-response/ResponsePlan";
 import EmergencyIncidentClose from "./pages/dashboard/emergency-response/IncidentClose";
 
@@ -88,6 +87,7 @@ import AdminUserManagement from "./pages/dashboard/admin/UserManagement";
 import AdminComplianceRules from "./pages/dashboard/admin/ComplianceRules";
 import AdminAuditLogs from "./pages/dashboard/admin/AuditLogs";
 import AdminSubscriptions from "./pages/dashboard/admin/Subscriptions";
+import AdminPaymentPage from "./pages/dashboard/admin/PaymentPage";
 
 const queryClient = new QueryClient();
 
@@ -197,7 +197,6 @@ const App = () => (
               {/* ── Emergency Response ────────────────────────────────── */}
               <Route path="/dashboard/emergency-response" element={<ProtectedRoute><EmergencyResponseDashboard /></ProtectedRoute>} />
               <Route path="/dashboard/emergency-response/alerts" element={<ProtectedRoute><EmergencyAlertCenter /></ProtectedRoute>} />
-              <Route path="/dashboard/emergency-response/navigation" element={<ProtectedRoute><EmergencyLiveNavigation /></ProtectedRoute>} />
               <Route path="/dashboard/emergency-response/plans" element={<ProtectedRoute><EmergencyResponsePlan /></ProtectedRoute>} />
               <Route path="/dashboard/emergency-response/close" element={<ProtectedRoute><EmergencyIncidentClose /></ProtectedRoute>} />
 
@@ -214,6 +213,7 @@ const App = () => (
               <Route path="/dashboard/admin/compliance" element={<ProtectedRoute><AdminComplianceRules /></ProtectedRoute>} />
               <Route path="/dashboard/admin/audit" element={<ProtectedRoute><AdminAuditLogs /></ProtectedRoute>} />
               <Route path="/dashboard/admin/subscriptions" element={<ProtectedRoute><AdminSubscriptions /></ProtectedRoute>} />
+              <Route path="/dashboard/admin/subscriptions/payment" element={<ProtectedRoute><AdminPaymentPage /></ProtectedRoute>} />
 
               {/* ── Shared Pages ──────────────────────────────────────── */}
               <Route path="/dashboard/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

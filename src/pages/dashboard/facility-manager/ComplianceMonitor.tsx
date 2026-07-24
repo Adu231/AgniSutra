@@ -28,6 +28,40 @@ const upcomingDeadlines = [
 const ComplianceMonitor: React.FC = () => {
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  const handleDownloadReport = (facility: typeof facilities[0]) => {
+    toast.success(`Downloading compliance report for ${facility.name}...`);
+    const content = `AGNISUTRA COMPLIANCE MONITOR REPORT
+=========================================
+Facility Name: ${facility.name}
+Compliance Score: ${facility.score}%
+Last Audit Date: ${facility.lastAudit}
+Next Audit Date: ${facility.nextAudit}
+Total Open Issues: ${facility.openIssues}
+
+Standard Statuses:
+------------------
+National Building Code (NBC): ${facility.nbc.toUpperCase()}
+National Fire Protection Association (NFPA): ${facility.nfpa.toUpperCase()}
+Tariff Advisory Committee (TAC): ${facility.tac.toUpperCase()}
+
+Critical Deadlines / Open Actions:
+----------------------------------
+${facility.criticalDeadlines.length > 0 ? facility.criticalDeadlines.map(d => `- ${d}`).join('\n') : 'No critical deadlines pending.'}
+
+Authorized Signature:
+AgniSutra Compliance Command Center
+`;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${facility.name.replace(/\s+/g, '_')}_Compliance_Report.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <RoleDashboardLayout title="Compliance Monitor">
       <div className="p-4 sm:p-6 space-y-6">
@@ -102,9 +136,9 @@ const ComplianceMonitor: React.FC = () => {
                         ))}
                       </div>
                     )}
-                    <Button size="sm" className="mt-3 text-xs gradient-fire text-white border-0 hover:opacity-90" onClick={() => toast.success('Downloading compliance report...')}>
-                      Download Report
-                    </Button>
+                     <Button size="sm" className="mt-3 text-xs gradient-fire text-white border-0 hover:opacity-90 flex items-center" onClick={() => handleDownloadReport(f)}>
+                       Download Report
+                     </Button>
                   </div>
                 )}
               </div>

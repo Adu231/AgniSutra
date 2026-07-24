@@ -12,9 +12,7 @@ const activeResponse = {
   elapsed: '24 min',
 };
 
-const deployedUnits = [
-  { id: 'FT-01', name: 'Fire Tender Alpha', status: 'on_scene', location: 'Warehouse B Entry', crew: 5, role: 'Primary Attack' },
-];
+// Deployed units definition is now managed via component state
 
 const communicationsLog = [
   { time: '14:44', from: 'FT-01 Commander', message: 'On scene. Structure fire confirmed in Bay 3. Smoke and heat visible. Beginning suppression.', type: 'status' },
@@ -36,6 +34,37 @@ const ResponseCoordination: React.FC = () => {
   const [message, setMessage] = useState('');
   const [log, setLog] = useState(communicationsLog);
   const [sending, setSending] = useState(false);
+
+  const [units, setUnits] = useState([
+    { id: 'FT-01', name: 'Fire Tender Alpha', status: 'on_scene', location: 'Warehouse B Entry', crew: 5, role: 'Primary Attack' },
+  ]);
+
+  const [timelineSteps, setTimelineSteps] = useState([
+    { label: 'Alert Received', time: '14:22', done: true },
+    { label: 'Unit Dispatched', time: '14:34', done: true },
+    { label: 'Unit On Scene', time: '14:44', done: true },
+    { label: 'Fire Contained', time: 'Pending', done: false },
+    { label: 'All Clear', time: 'Pending', done: false },
+    { label: 'Incident Closed', time: 'Pending', done: false },
+  ]);
+
+  const handleMarkContained = () => {
+    setTimelineSteps(prev => prev.map(step => step.label === 'Fire Contained' ? { ...step, done: true, time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) } : step));
+    toast.success('Incident marked as Contained successfully!');
+  };
+
+  const handleRequestUnit = () => {
+    const newUnit = {
+      id: `FT-0${units.length + 1}`,
+      name: `Fire Tender ${String.fromCharCode(65 + units.length)}`, // Beta, Gamma, etc.
+      status: 'dispatching',
+      location: 'En Route from Base',
+      crew: 4,
+      role: 'Support Attack'
+    };
+    setUnits(prev => [...prev, newUnit]);
+    toast.success(`${newUnit.name} requested and dispatched to scene!`);
+  };
 
   const handleSend = async () => {
     if (!message.trim()) return;
@@ -66,7 +95,7 @@ const ResponseCoordination: React.FC = () => {
               <p className="text-white/80">{activeResponse.type} · {activeResponse.address}</p>
               <p className="text-white/70 text-sm mt-1">Started: {activeResponse.startedAt} · Elapsed: {activeResponse.elapsed}</p>
             </div>
-            <Button size="sm" className="bg-white text-amber-700 hover:bg-white/90 font-semibold text-xs" onClick={() => toast.success('Incident marked as contained')}>
+            <Button size="sm" className="bg-white text-amber-700 hover:bg-white/90 font-semibold text-xs flex items-center" onClick={handleMarkContained}>
               <CheckCircle className="w-3 h-3 mr-1" />Mark Contained
             </Button>
           </div>
@@ -78,7 +107,7 @@ const ResponseCoordination: React.FC = () => {
           <div className="bg-card border border-border rounded-2xl p-5">
             <h3 className="font-semibold mb-4 flex items-center gap-2"><Truck className="w-4 h-4 text-amber-500" />Deployed Units</h3>
             <div className="space-y-3">
-              {deployedUnits.map(unit => (
+              {units.map(unit => (
                 <div key={unit.id} className="p-3 bg-muted/40 rounded-xl">
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-sm font-semibold">{unit.name}</p>
@@ -94,7 +123,7 @@ const ResponseCoordination: React.FC = () => {
                   </div>
                 </div>
               ))}
-              <Button size="sm" className="w-full text-xs gradient-fire text-white border-0" onClick={() => toast.success('Requesting additional unit...')}>
+              <Button size="sm" className="w-full text-xs gradient-fire text-white border-0 font-semibold hover:opacity-90 flex items-center justify-center" onClick={handleRequestUnit}>
                 <Truck className="w-3 h-3 mr-1" />Request Additional Unit
               </Button>
             </div>
@@ -104,14 +133,7 @@ const ResponseCoordination: React.FC = () => {
           <div className="bg-card border border-border rounded-2xl p-5">
             <h3 className="font-semibold mb-4">Incident Status</h3>
             <div className="space-y-3">
-              {[
-                { label: 'Alert Received', time: '14:22', done: true },
-                { label: 'Unit Dispatched', time: '14:34', done: true },
-                { label: 'Unit On Scene', time: '14:44', done: true },
-                { label: 'Fire Contained', time: 'Pending', done: false },
-                { label: 'All Clear', time: 'Pending', done: false },
-                { label: 'Incident Closed', time: 'Pending', done: false },
-              ].map((s, i) => (
+              {timelineSteps.map((s, i) => (
                 <div key={s.label} className="flex items-center gap-3">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${s.done ? 'bg-green-500' : 'bg-muted'}`}>
                     {s.done ? <CheckCircle className="w-3.5 h-3.5 text-white" /> : <span className="text-xs text-muted-foreground">{i + 1}</span>}

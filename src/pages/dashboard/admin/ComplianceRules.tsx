@@ -1,21 +1,68 @@
 import React, { useState } from 'react';
 import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
-import { Shield, Plus, CheckCircle, Edit, Trash2, ChevronDown } from 'lucide-react';
+import { Shield, Plus, CheckCircle, Edit, Trash2, ChevronDown, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-const templates = [
-  { id: 'TPL-001', name: 'NBC 2016 — Standard Compliance', standard: 'NBC', version: '2016', applicableTo: ['Commercial', 'Residential', 'Industrial'], status: 'active', orgsUsing: 98, checkpoints: 142, lastUpdated: 'Jul 1, 2025' },
-  { id: 'TPL-002', name: 'NFPA 101 — Life Safety Code', standard: 'NFPA', version: '2021', applicableTo: ['Healthcare', 'Educational', 'Assembly'], status: 'active', orgsUsing: 67, checkpoints: 188, lastUpdated: 'Jun 15, 2025' },
-  { id: 'TPL-003', name: 'NFPA 72 — Fire Alarm Systems', standard: 'NFPA', version: '2022', applicableTo: ['All'], status: 'active', orgsUsing: 115, checkpoints: 96, lastUpdated: 'May 20, 2025' },
-  { id: 'TPL-004', name: 'TAC — Tariff Advisory Committee', standard: 'TAC', version: '2024', applicableTo: ['Commercial', 'Industrial'], status: 'active', orgsUsing: 45, checkpoints: 78, lastUpdated: 'Jul 10, 2025' },
-  { id: 'TPL-005', name: 'IS 2189 — Fire Detection & Alarm', standard: 'BIS', version: '2023', applicableTo: ['All'], status: 'draft', orgsUsing: 0, checkpoints: 64, lastUpdated: 'Jul 20, 2025' },
-];
+// Templates list is now managed via component state
 
 const ComplianceRules: React.FC = () => {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newRule, setNewRule] = useState({ name: '', standard: '', description: '' });
+  
+  const [tpls, setTpls] = useState([
+    { id: 'TPL-001', name: 'NBC 2016 — Standard Compliance', standard: 'NBC', version: '2016', applicableTo: ['Commercial', 'Residential', 'Industrial'], status: 'active', orgsUsing: 98, checkpoints: 142, lastUpdated: 'Jul 1, 2025' },
+    { id: 'TPL-002', name: 'NFPA 101 — Life Safety Code', standard: 'NFPA', version: '2021', applicableTo: ['Healthcare', 'Educational', 'Assembly'], status: 'active', orgsUsing: 67, checkpoints: 188, lastUpdated: 'Jun 15, 2025' },
+    { id: 'TPL-003', name: 'NFPA 72 — Fire Alarm Systems', standard: 'NFPA', version: '2022', applicableTo: ['All'], status: 'active', orgsUsing: 115, checkpoints: 96, lastUpdated: 'May 20, 2025' },
+    { id: 'TPL-004', name: 'TAC — Tariff Advisory Committee', standard: 'TAC', version: '2024', applicableTo: ['Commercial', 'Industrial'], status: 'active', orgsUsing: 45, checkpoints: 78, lastUpdated: 'Jul 10, 2025' },
+    { id: 'TPL-005', name: 'IS 2189 — Fire Detection & Alarm', standard: 'BIS', version: '2023', applicableTo: ['All'], status: 'draft', orgsUsing: 0, checkpoints: 64, lastUpdated: 'Jul 20, 2025' },
+  ]);
+  const [editingTpl, setEditingTpl] = useState<typeof tpls[0] | null>(null);
+
+  const handleSaveDraft = () => {
+    if (!newRule.name) {
+      toast.error('Template name is required.');
+      return;
+    }
+    const draft = {
+      id: `TPL-0${tpls.length + 1}`,
+      name: newRule.name,
+      standard: newRule.standard || 'Custom',
+      version: '2026',
+      applicableTo: ['All'],
+      status: 'draft',
+      orgsUsing: 0,
+      checkpoints: 24,
+      lastUpdated: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    };
+    setTpls(prev => [...prev, draft]);
+    setShowAddForm(false);
+    setNewRule({ name: '', standard: '', description: '' });
+    toast.success('Template added as draft successfully!');
+  };
+
+  const handlePublish = (id: string) => {
+    setTpls(prev => prev.map(t => t.id === id ? { ...t, status: 'active' } : t));
+    toast.success('Compliance template published successfully!');
+  };
+
+  const handleRemove = (id: string, orgsUsing: number) => {
+    if (orgsUsing > 0) {
+      toast.error('Cannot delete templates with active organizations.');
+      return;
+    }
+    setTpls(prev => prev.filter(t => t.id !== id));
+    toast.success('Template removed successfully.');
+  };
+
+  const handleEditSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTpl) return;
+    setTpls(prev => prev.map(t => t.id === editingTpl.id ? editingTpl : t));
+    setEditingTpl(null);
+    toast.success('Template updated successfully!');
+  };
 
   return (
     <RoleDashboardLayout title="Compliance Rules">
@@ -33,10 +80,10 @@ const ComplianceRules: React.FC = () => {
         {/* Summary */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: 'Active Templates', value: templates.filter(t => t.status === 'active').length, color: 'text-green-600 dark:text-green-400' },
-            { label: 'Draft Templates', value: templates.filter(t => t.status === 'draft').length, color: 'text-orange-600 dark:text-orange-400' },
-            { label: 'Total Checkpoints', value: templates.reduce((s, t) => s + t.checkpoints, 0), color: 'text-blue-600 dark:text-blue-400' },
-            { label: 'Organizations Using', value: templates.reduce((s, t) => s + t.orgsUsing, 0), color: 'text-purple-600 dark:text-purple-400' },
+            { label: 'Active Templates', value: tpls.filter(t => t.status === 'active').length, color: 'text-green-600 dark:text-green-400' },
+            { label: 'Draft Templates', value: tpls.filter(t => t.status === 'draft').length, color: 'text-orange-600 dark:text-orange-400' },
+            { label: 'Total Checkpoints', value: tpls.reduce((s, t) => s + t.checkpoints, 0), color: 'text-blue-600 dark:text-blue-400' },
+            { label: 'Organizations Using', value: tpls.reduce((s, t) => s + t.orgsUsing, 0), color: 'text-purple-600 dark:text-purple-400' },
           ].map(s => (
             <div key={s.label} className="bg-card border border-border rounded-xl p-4">
               <div className={`text-2xl font-black ${s.color}`} style={{ fontFamily: 'Space Grotesk, sans-serif' }}>{s.value}</div>
@@ -72,14 +119,14 @@ const ComplianceRules: React.FC = () => {
             </div>
             <div className="flex gap-2">
               <Button size="sm" variant="outline" onClick={() => setShowAddForm(false)}>Cancel</Button>
-              <Button size="sm" className="gradient-fire text-white border-0" onClick={() => { toast.success('Template added as draft!'); setShowAddForm(false); }}>Save as Draft</Button>
+              <Button size="sm" className="gradient-fire text-white border-0 font-semibold" onClick={handleSaveDraft}>Save as Draft</Button>
             </div>
           </div>
         )}
 
         {/* Templates List */}
         <div className="space-y-3">
-          {templates.map(tpl => (
+          {tpls.map(tpl => (
             <div key={tpl.id} className="bg-card border border-border rounded-xl overflow-hidden">
               <button
                 className="w-full px-4 py-4 flex items-center gap-3 hover:bg-muted/30 transition-colors text-left"
@@ -110,15 +157,15 @@ const ComplianceRules: React.FC = () => {
                     {tpl.applicableTo.map(a => <span key={a} className="text-xs bg-muted px-2 py-0.5 rounded">{a}</span>)}
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="text-xs" onClick={() => toast.success('Template editor opened')}>
+                    <Button size="sm" variant="outline" className="text-xs font-semibold hover:opacity-90" onClick={() => setEditingTpl(tpl)}>
                       <Edit className="w-3 h-3 mr-1" />Edit
                     </Button>
                     {tpl.status === 'draft' && (
-                      <Button size="sm" className="text-xs bg-green-600 hover:bg-green-700 text-white border-0" onClick={() => toast.success(`${tpl.name} published!`)}>
+                      <Button size="sm" className="text-xs bg-green-600 hover:bg-green-700 text-white border-0 font-semibold hover:opacity-90" onClick={() => handlePublish(tpl.id)}>
                         <CheckCircle className="w-3 h-3 mr-1" />Publish
                       </Button>
                     )}
-                    <Button size="sm" variant="outline" className="text-xs text-red-600 dark:text-red-400 border-red-200 dark:border-red-800" onClick={() => toast.error('Cannot delete templates with active organizations')}>
+                    <Button size="sm" variant="outline" className="text-xs text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 font-semibold hover:opacity-90" onClick={() => handleRemove(tpl.id, tpl.orgsUsing)}>
                       <Trash2 className="w-3 h-3 mr-1" />Remove
                     </Button>
                   </div>
@@ -128,6 +175,73 @@ const ComplianceRules: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Edit Compliance Template Modal */}
+      {editingTpl && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 text-left">
+            <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20">
+              <h3 className="font-bold text-base">Edit Template: {editingTpl.id}</h3>
+              <button
+                onClick={() => setEditingTpl(null)}
+                className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleEditSave}>
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Template Name</label>
+                  <input
+                    type="text"
+                    required
+                    className="input-field text-sm"
+                    value={editingTpl.name}
+                    onChange={e => setEditingTpl(p => p ? ({ ...p, name: e.target.value }) : null)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">Standard Body</label>
+                    <input
+                      type="text"
+                      required
+                      className="input-field text-sm"
+                      value={editingTpl.standard}
+                      onChange={e => setEditingTpl(p => p ? ({ ...p, standard: e.target.value }) : null)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">Version</label>
+                    <input
+                      type="text"
+                      required
+                      className="input-field text-sm font-mono"
+                      value={editingTpl.version}
+                      onChange={e => setEditingTpl(p => p ? ({ ...p, version: e.target.value }) : null)}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Checkpoints Count</label>
+                  <input
+                    type="number"
+                    required
+                    className="input-field text-sm"
+                    value={editingTpl.checkpoints}
+                    onChange={e => setEditingTpl(p => p ? ({ ...p, checkpoints: Number(e.target.value) }) : null)}
+                  />
+                </div>
+              </div>
+              <div className="px-6 py-3 border-t border-border flex justify-end gap-2 bg-muted/20">
+                <Button type="button" size="sm" variant="outline" onClick={() => setEditingTpl(null)}>Cancel</Button>
+                <Button type="submit" size="sm" className="gradient-fire text-white border-0">Save Changes</Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </RoleDashboardLayout>
   );
 };

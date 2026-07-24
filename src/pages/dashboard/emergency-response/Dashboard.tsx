@@ -16,16 +16,27 @@ const recentIncidents = [
   { id: 'INC-038', type: 'Gas Leak Alert', location: 'Canteen Kitchen', severity: 'critical', time: '3 days ago', status: 'resolved', responseTime: '4 min' },
 ];
 
-const teamStatus = [
-  { name: 'Team Alpha', members: 4, status: 'responding', location: 'Warehouse B', radio: 'CH-01' },
-  { name: 'Team Beta', members: 3, status: 'standby', location: 'Base Station', radio: 'CH-02' },
-  { name: 'Team Gamma', members: 4, status: 'available', location: 'Main Building', radio: 'CH-03' },
-];
+// Team status definition is now managed via component state
 
 const EmergencyResponseDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [elapsed, setElapsed] = useState(127);
+  const [teams, setTeams] = useState([
+    { name: 'Team Alpha', members: 4, status: 'responding', location: 'Warehouse B', radio: 'CH-01' },
+    { name: 'Team Beta', members: 3, status: 'standby', location: 'Base Station', radio: 'CH-02' },
+    { name: 'Team Gamma', members: 4, status: 'available', location: 'Main Building', radio: 'CH-03' },
+  ]);
+  const [broadcasting, setBroadcasting] = useState(false);
+
+  const handleBroadcast = async () => {
+    setBroadcasting(true);
+    toast.info('Sending emergency broadcast to all dispatch channels...');
+    await new Promise(r => setTimeout(r, 1500));
+    setTeams(prev => prev.map(t => ({ ...t, status: 'responding' })));
+    setBroadcasting(false);
+    toast.success('All teams responded and changed state to responding!');
+  };
 
   useEffect(() => {
     const timer = setInterval(() => setElapsed(p => p + 1), 1000);
@@ -68,7 +79,7 @@ const EmergencyResponseDashboard: React.FC = () => {
               </div>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button size="sm" className="bg-white text-red-700 hover:bg-white/90 font-semibold text-xs" onClick={() => navigate('/dashboard/emergency-response/navigation')}>
+              <Button size="sm" className="bg-white text-red-700 hover:bg-white/90 font-semibold text-xs" onClick={() => navigate('/dashboard/emergency-response/alerts')}>
                 Navigate to Location
               </Button>
               <Button size="sm" className="bg-white/20 text-white hover:text-white hover:bg-white/30 text-xs border-white/30" variant="outline" onClick={() => navigate('/dashboard/emergency-response/plans')}>
@@ -107,7 +118,7 @@ const EmergencyResponseDashboard: React.FC = () => {
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="font-semibold mb-4">Response Team Status</h3>
             <div className="space-y-3">
-              {teamStatus.map(team => (
+              {teams.map(team => (
                 <div key={team.name} className="flex items-center gap-3 p-3 bg-muted/40 rounded-xl">
                   <div className={`w-3 h-3 rounded-full flex-shrink-0 ${team.status === 'responding' ? 'bg-red-500 animate-pulse' : team.status === 'standby' ? 'bg-yellow-500' : 'bg-green-500'}`} />
                   <div className="flex-1 min-w-0">
@@ -120,8 +131,17 @@ const EmergencyResponseDashboard: React.FC = () => {
                 </div>
               ))}
             </div>
-            <Button size="sm" className="w-full mt-4 gradient-fire text-white border-0 text-xs" onClick={() => toast.success('Emergency broadcast sent to all teams!')}>
-              <PhoneCall className="w-3.5 h-3.5 mr-2" />Broadcast All Teams
+            <Button
+              size="sm"
+              className="w-full mt-4 gradient-fire text-white border-0 text-xs font-semibold hover:opacity-90 flex items-center justify-center"
+              onClick={handleBroadcast}
+              disabled={broadcasting}
+            >
+              {broadcasting ? (
+                <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />Broadcasting...</>
+              ) : (
+                <><PhoneCall className="w-3.5 h-3.5 mr-2" />Broadcast All Teams</>
+              )}
             </Button>
           </div>
 
@@ -154,7 +174,7 @@ const EmergencyResponseDashboard: React.FC = () => {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { label: 'Active Alerts', href: '/dashboard/emergency-response/alerts', color: 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800' },
-            { label: 'Navigate', href: '/dashboard/emergency-response/navigation', color: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800' },
+            { label: 'Active Alerts', href: '/dashboard/emergency-response/alerts', color: 'bg-red-50 dark:bg-red-900/20 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800' },
             { label: 'Response Plans', href: '/dashboard/emergency-response/plans', color: 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800' },
             { label: 'Close Incident', href: '/dashboard/emergency-response/close', color: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800' },
           ].map(a => (

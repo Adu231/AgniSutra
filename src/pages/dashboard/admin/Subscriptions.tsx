@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
-import { CreditCard, TrendingUp, DollarSign, Users, Package, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { CreditCard, TrendingUp, DollarSign, Users, Package, CheckCircle, Clock, AlertTriangle, X } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-const subscriptions = [
-  { id: 'SUB-001', org: 'DLF Commercial Properties', plan: 'enterprise', amount: 399, billing: 'annual', status: 'active', startDate: 'Jan 1, 2024', renewalDate: 'Jan 1, 2026', facilities: 12, users: 34 },
-  { id: 'SUB-002', org: 'Apollo Hospitals Group', plan: 'enterprise', amount: 399, billing: 'annual', status: 'active', startDate: 'Feb 1, 2024', renewalDate: 'Feb 1, 2026', facilities: 23, users: 51 },
-  { id: 'SUB-003', org: 'Tata Steel Manufacturing', plan: 'professional', amount: 149, billing: 'monthly', status: 'active', startDate: 'Mar 15, 2024', renewalDate: 'Aug 15, 2025', facilities: 6, users: 18 },
-  { id: 'SUB-004', org: 'Maharashtra Fire Services', plan: 'professional', amount: 149, billing: 'annual', status: 'active', startDate: 'Jan 20, 2024', renewalDate: 'Jan 20, 2026', facilities: 8, users: 22 },
-  { id: 'SUB-005', org: 'GMR Airports Ltd', plan: 'enterprise', amount: 399, billing: 'annual', status: 'active', startDate: 'Apr 5, 2024', renewalDate: 'Apr 5, 2026', facilities: 4, users: 41 },
-  { id: 'SUB-006', org: 'Small Factory Ltd', plan: 'free', amount: 0, billing: 'N/A', status: 'trial_expired', startDate: 'Jun 1, 2024', renewalDate: 'Jul 1, 2024', facilities: 1, users: 2 },
-];
+// Initial subscriptions data is now managed via component state
 
 const revenueByPlan = [
   { plan: 'Enterprise', count: 3, mrr: 1197 },
@@ -34,8 +28,27 @@ const planConfig: Record<string, string> = {
 };
 
 const Subscriptions: React.FC = () => {
-  const totalMRR = subscriptions.filter(s => s.status === 'active').reduce((sum, s) => sum + (s.billing === 'monthly' ? s.amount : s.amount), 0);
-  const annualRevenue = subscriptions.filter(s => s.status === 'active').reduce((sum, s) => sum + (s.billing === 'annual' ? s.amount * 12 : s.amount * 12), 0);
+  const navigate = useNavigate();
+  const [subs, setSubs] = useState([
+    { id: 'SUB-001', org: 'DLF Commercial Properties', plan: 'enterprise', amount: 399, billing: 'annual', status: 'active', startDate: 'Jan 1, 2024', renewalDate: 'Jan 1, 2026', facilities: 12, users: 34 },
+    { id: 'SUB-002', org: 'Apollo Hospitals Group', plan: 'enterprise', amount: 399, billing: 'annual', status: 'active', startDate: 'Feb 1, 2024', renewalDate: 'Feb 1, 2026', facilities: 23, users: 51 },
+    { id: 'SUB-003', org: 'Tata Steel Manufacturing', plan: 'professional', amount: 149, billing: 'monthly', status: 'active', startDate: 'Mar 15, 2024', renewalDate: 'Aug 15, 2025', facilities: 6, users: 18 },
+    { id: 'SUB-004', org: 'Maharashtra Fire Services', plan: 'professional', amount: 149, billing: 'annual', status: 'active', startDate: 'Jan 20, 2024', renewalDate: 'Jan 20, 2026', facilities: 8, users: 22 },
+    { id: 'SUB-005', org: 'GMR Airports Ltd', plan: 'enterprise', amount: 399, billing: 'annual', status: 'active', startDate: 'Apr 5, 2024', renewalDate: 'Apr 5, 2026', facilities: 4, users: 41 },
+    { id: 'SUB-006', org: 'Small Factory Ltd', plan: 'free', amount: 0, billing: 'N/A', status: 'trial_expired', startDate: 'Jun 1, 2024', renewalDate: 'Jul 1, 2024', facilities: 1, users: 2 },
+  ]);
+  const [editingSub, setEditingSub] = useState<typeof subs[0] | null>(null);
+
+  const handleEditSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSub) return;
+    setSubs(prev => prev.map(s => s.id === editingSub.id ? editingSub : s));
+    setEditingSub(null);
+    toast.success('Subscription details updated successfully!');
+  };
+
+  const totalMRR = subs.filter(s => s.status === 'active').reduce((sum, s) => sum + s.amount, 0);
+  const annualRevenue = subs.filter(s => s.status === 'active').reduce((sum, s) => sum + (s.amount * 12), 0);
 
   return (
     <RoleDashboardLayout title="Subscriptions">
@@ -50,7 +63,7 @@ const Subscriptions: React.FC = () => {
           {[
             { label: 'MRR', value: `$${(totalMRR / 1000).toFixed(1)}K`, change: '+7% vs Jun', color: 'text-green-500', bg: 'bg-green-500/10', icon: DollarSign },
             { label: 'ARR (Projected)', value: `$${(annualRevenue / 1000).toFixed(0)}K`, change: 'Based on current plans', color: 'text-blue-500', bg: 'bg-blue-500/10', icon: TrendingUp },
-            { label: 'Paid Subscribers', value: subscriptions.filter(s => s.status === 'active' && s.amount > 0).length, change: `of ${subscriptions.length} total`, color: 'text-purple-500', bg: 'bg-purple-500/10', icon: Users },
+            { label: 'Paid Subscribers', value: subs.filter(s => s.status === 'active' && s.amount > 0).length, change: `of ${subs.length} total`, color: 'text-purple-500', bg: 'bg-purple-500/10', icon: Users },
             { label: 'Expiring (30d)', value: 1, change: 'Tata Steel — Aug 15', color: 'text-orange-500', bg: 'bg-orange-500/10', icon: Clock },
           ].map(s => {
             const Icon = s.icon;
@@ -83,7 +96,7 @@ const Subscriptions: React.FC = () => {
         {/* Subscription Table */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
           <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-            <h3 className="font-semibold text-sm">All Subscriptions ({subscriptions.length})</h3>
+            <h3 className="font-semibold text-sm">All Subscriptions ({subs.length})</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -98,7 +111,7 @@ const Subscriptions: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {subscriptions.map(sub => (
+                 {subs.map(sub => (
                   <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-3">
                       <p className="font-medium text-sm">{sub.org}</p>
@@ -116,9 +129,9 @@ const Subscriptions: React.FC = () => {
                     <td className="px-4 py-3 text-xs text-muted-foreground hidden lg:table-cell">{sub.renewalDate}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
-                        <Button size="sm" variant="outline" className="text-xs" onClick={() => toast.success('Subscription details opened')}>Edit</Button>
+                        <Button size="sm" variant="outline" className="text-xs font-semibold hover:opacity-90" onClick={() => setEditingSub(sub)}>Edit</Button>
                         {sub.status === 'trial_expired' && (
-                          <Button size="sm" className="text-xs gradient-fire text-white border-0 hover:opacity-90" onClick={() => toast.success('Upgrade email sent!')}>Upgrade</Button>
+                          <Button size="sm" className="text-xs gradient-fire text-white border-0 hover:opacity-90 font-semibold" onClick={() => navigate(`/dashboard/admin/subscriptions/payment?org=${encodeURIComponent(sub.org)}&plan=professional`)}>Upgrade</Button>
                         )}
                       </div>
                     </td>
@@ -129,6 +142,101 @@ const Subscriptions: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Subscription Modal */}
+      {editingSub && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200 text-left">
+            <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/20">
+              <h3 className="font-bold text-base">Edit Billing details</h3>
+              <button
+                onClick={() => setEditingSub(null)}
+                className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleEditSave}>
+              <div className="p-6 space-y-4 text-sm">
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Organization</label>
+                  <input
+                    type="text"
+                    disabled
+                    className="input-field text-sm opacity-60 bg-muted/20"
+                    value={editingSub.org}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">Billing Tier</label>
+                    <select
+                      className="input-field text-sm"
+                      value={editingSub.plan}
+                      onChange={e => setEditingSub(p => p ? ({ ...p, plan: e.target.value }) : null)}
+                    >
+                      <option value="free">Free Trial</option>
+                      <option value="professional">Professional</option>
+                      <option value="enterprise">Enterprise</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">Billing Cycle</label>
+                    <select
+                      className="input-field text-sm"
+                      value={editingSub.billing}
+                      onChange={e => setEditingSub(p => p ? ({ ...p, billing: e.target.value }) : null)}
+                    >
+                      <option value="monthly">Monthly</option>
+                      <option value="annual">Annual</option>
+                      <option value="N/A">N/A</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">Billing Amount ($)</label>
+                    <input
+                      type="number"
+                      required
+                      className="input-field text-sm font-mono"
+                      value={editingSub.amount}
+                      onChange={e => setEditingSub(p => p ? ({ ...p, amount: Number(e.target.value) }) : null)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1">Renewal Date</label>
+                    <input
+                      type="text"
+                      required
+                      className="input-field text-sm font-mono"
+                      value={editingSub.renewalDate}
+                      onChange={e => setEditingSub(p => p ? ({ ...p, renewalDate: e.target.value }) : null)}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1">Subscription Status</label>
+                  <select
+                    className="input-field text-sm"
+                    value={editingSub.status}
+                    onChange={e => setEditingSub(p => p ? ({ ...p, status: e.target.value }) : null)}
+                  >
+                    <option value="active">Active</option>
+                    <option value="trial_expired">Trial Expired</option>
+                    <option value="cancelled">Cancelled</option>
+                    <option value="past_due">Past Due</option>
+                  </select>
+                </div>
+              </div>
+              <div className="px-6 py-3 border-t border-border flex justify-end gap-2 bg-muted/20">
+                <Button type="button" size="sm" variant="outline" onClick={() => setEditingSub(null)}>Cancel</Button>
+                <Button type="submit" size="sm" className="gradient-fire text-white border-0">Save Changes</Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </RoleDashboardLayout>
   );
 };

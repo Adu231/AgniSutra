@@ -6,10 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-const dispatchQueue = [
-  { id: 'CALL-201', type: 'Structure Fire', address: 'Warehouse B, Andheri Industrial Zone', reported: '2 min ago', priority: 'critical', caller: 'Automated — IoT Sensor', status: 'pending' },
-  { id: 'CALL-200', type: 'Gas Leak', address: '14 Linking Road, Bandra', reported: '12 min ago', priority: 'high', caller: 'Residential — 101', status: 'dispatched' },
-];
+// Dispatch queue definition is now managed via component state
 
 const units = [
   { id: 'FT-01', name: 'Fire Tender Alpha', type: 'Heavy Tender', crew: 5, status: 'responding', location: 'Andheri Industrial Zone', eta: '3 min' },
@@ -23,6 +20,15 @@ const FireDepartmentDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [greeting, setGreeting] = useState('');
+  const [queue, setQueue] = useState([
+    { id: 'CALL-201', type: 'Structure Fire', address: 'Warehouse B, Andheri Industrial Zone', reported: '2 min ago', priority: 'critical', caller: 'Automated — IoT Sensor', status: 'pending' },
+    { id: 'CALL-200', type: 'Gas Leak', address: '14 Linking Road, Bandra', reported: '12 min ago', priority: 'high', caller: 'Residential — 101', status: 'dispatched' },
+  ]);
+
+  const handleDispatch = (id: string) => {
+    setQueue(prev => prev.map(call => call.id === id ? { ...call, status: 'dispatched' } : call));
+    toast.success(`Fire units dispatched to incident ${id}!`);
+  };
 
   useEffect(() => {
     const h = new Date().getHours();
@@ -92,7 +98,7 @@ const FireDepartmentDashboard: React.FC = () => {
             <button onClick={() => navigate('/dashboard/fire-department/incidents')} className="text-xs text-amber-600 dark:text-amber-400 hover:underline">Manage →</button>
           </div>
           <div className="divide-y divide-border">
-            {dispatchQueue.map(call => (
+            {queue.map(call => (
               <div key={call.id} className="px-4 py-4 flex items-center gap-4">
                 <div className={`w-3 h-3 rounded-full flex-shrink-0 ${call.priority === 'critical' ? 'bg-red-500 animate-pulse' : 'bg-orange-500'}`} />
                 <div className="flex-1 min-w-0">
@@ -101,10 +107,14 @@ const FireDepartmentDashboard: React.FC = () => {
                     <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${call.priority === 'critical' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'}`}>{call.priority}</span>
                   </div>
                   <p className="text-xs text-muted-foreground">{call.address} · {call.reported}</p>
-                  <p className="text-xs text-muted-foreground">Caller: {call.caller}</p>
+                  <p className="text-xs text-muted-foreground">Caller: {call.caller} · Status: <span className="font-semibold">{call.status}</span></p>
                 </div>
                 <div className="flex gap-2 flex-shrink-0">
-                  <Button size="sm" className="text-xs gradient-fire text-white border-0 hover:opacity-90" onClick={() => toast.success(`Unit dispatched to ${call.id}!`)}>Dispatch</Button>
+                  {call.status === 'pending' ? (
+                    <Button size="sm" className="text-xs gradient-fire text-white border-0 hover:opacity-90 font-semibold" onClick={() => handleDispatch(call.id)}>Dispatch</Button>
+                  ) : (
+                    <span className="text-xs text-muted-foreground font-medium bg-muted px-2.5 py-1 rounded">Dispatched</span>
+                  )}
                 </div>
               </div>
             ))}

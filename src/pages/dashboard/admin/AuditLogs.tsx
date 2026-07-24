@@ -34,6 +34,27 @@ const AuditLogs: React.FC = () => {
     return matchSearch && matchSeverity;
   });
 
+  const handleExportLogs = () => {
+    if (filtered.length === 0) {
+      toast.error('No logs to export.');
+      return;
+    }
+    const headers = 'ID,Action,User,Organization,IP,Timestamp,Severity,Details\n';
+    const rows = filtered.map(log => 
+      `"${log.id}","${log.action}","${log.user}","${log.org}","${log.ip}","${log.timestamp}","${log.severity}","${log.details.replace(/"/g, '""')}"`
+    ).join('\n');
+    
+    const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Audit_Logs_Export_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Audit logs exported to CSV successfully!');
+  };
+
   return (
     <RoleDashboardLayout title="Audit Logs">
       <div className="p-4 sm:p-6 space-y-6">
@@ -42,7 +63,7 @@ const AuditLogs: React.FC = () => {
             <h2 className="text-xl font-bold">Audit Logs</h2>
             <p className="text-sm text-muted-foreground">Complete activity trail for compliance and security monitoring</p>
           </div>
-          <Button size="sm" variant="outline" className="text-xs flex-shrink-0" onClick={() => toast.success('Exporting audit logs...')}>
+          <Button size="sm" variant="outline" className="text-xs flex-shrink-0 font-semibold hover:opacity-90" onClick={handleExportLogs}>
             <Download className="w-3.5 h-3.5 mr-1" />Export Logs
           </Button>
         </div>

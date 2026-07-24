@@ -23,6 +23,40 @@ const ServiceHistory: React.FC = () => {
     s.id.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleExport = () => {
+    toast.success('Generating export file...');
+    
+    // Construct CSV content
+    const headers = ['Service ID', 'Equipment', 'Type', 'Location', 'Technician', 'Completed At', 'Duration', 'Parts Used', 'Notes', 'Cost (INR)'];
+    const rows = filtered.map(svc => [
+      svc.id,
+      svc.equipment,
+      svc.type,
+      svc.location,
+      svc.technician,
+      svc.completedAt,
+      svc.duration,
+      svc.parts.join('; '),
+      svc.notes,
+      svc.cost.toString()
+    ]);
+    
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(r => r.map(val => `"${val.replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Service_History_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const totalCost = serviceHistory.reduce((sum, s) => sum + s.cost, 0);
   const avgDuration = '1h 10min';
 
@@ -59,7 +93,14 @@ const ServiceHistory: React.FC = () => {
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
           <div className="px-4 py-3 border-b border-border flex items-center justify-between">
             <h3 className="font-semibold text-sm">Service Records ({filtered.length})</h3>
-            <Button size="sm" variant="outline" className="text-xs" onClick={() => toast.success('Exporting service history...')}><Download className="w-3.5 h-3.5 mr-1" />Export</Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs font-semibold hover:opacity-90"
+              onClick={handleExport}
+            >
+              <Download className="w-3.5 h-3.5 mr-1" />Export
+            </Button>
           </div>
           <div className="divide-y divide-border">
             {filtered.map(svc => (
