@@ -274,8 +274,8 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({ children, tit
               <Menu className="w-4 h-4" />
             </button>
             {title && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-foreground">{title}</span>
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-sm font-semibold text-foreground truncate max-w-[120px] sm:max-w-[280px]">{title}</span>
               </div>
             )}
           </div>

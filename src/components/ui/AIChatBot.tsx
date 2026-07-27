@@ -79,10 +79,10 @@ export const AIChatBot: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end max-w-[calc(100vw-32px)]">
       {/* Chat Window */}
       {isOpen && (
-        <div className="w-[360px] h-[500px] bg-card/95 backdrop-blur border border-border rounded-2xl shadow-2xl flex flex-col mb-4 overflow-hidden animate-slide-up">
+        <div className="w-[calc(100vw-32px)] sm:w-[360px] h-[500px] bg-card/95 backdrop-blur border border-border rounded-2xl shadow-2xl flex flex-col mb-4 overflow-hidden animate-slide-up">
           {/* Header */}
           <div className="gradient-fire p-4 text-white flex items-center justify-between">
             <div className="flex items-center gap-2">

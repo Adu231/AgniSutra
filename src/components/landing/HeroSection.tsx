@@ -36,7 +36,7 @@ const HeroSection: React.FC = () => {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-12 sm:pt-0 sm:pb-0">
       {/* Background */}
       <div className="absolute inset-0">
         <img
@@ -56,30 +56,31 @@ const HeroSection: React.FC = () => {
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-red-500/40 bg-red-500/10 backdrop-blur-sm text-red-300 text-sm font-medium mb-8 animate-slide-up">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-red-500/40 bg-red-500/10 backdrop-blur-sm text-red-300 text-xs sm:text-sm font-medium mb-8 animate-slide-up">
           <div className="relative flex items-center justify-center">
             <div className="w-2 h-2 rounded-full bg-red-400" />
             <div className="absolute w-2 h-2 rounded-full bg-red-400 animate-ping" />
           </div>
-          AI-Powered Fire Safety Platform · Trusted by 2,500+ Facilities
+          <span className="hidden sm:inline">AI-Powered Fire Safety Platform · Trusted by 2,500+ Facilities</span>
+          <span className="inline sm:hidden">AI-Powered Fire Safety Platform</span>
         </div>
 
         {/* Main Headline */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight animate-slide-up"
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight animate-slide-up"
           style={{ animationDelay: '0.1s', fontFamily: 'Space Grotesk, sans-serif' }}>
           Fire Safety Made{' '}
           <span
-            className="inline-block min-w-[200px] sm:min-w-[280px] transition-all duration-300"
+            className="inline-block min-w-[130px] sm:min-w-[280px] transition-all duration-300"
             style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(-10px)' }}
           >
             <span className="gradient-fire-text">{ROTATING_WORDS[wordIndex]}</span>
           </span>
         </h1>
 
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white/80 mb-6 animate-slide-up" style={{ animationDelay: '0.15s' }}>
+        <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-white/80 mb-6 animate-slide-up" style={{ animationDelay: '0.15s' }}>
           Built for{' '}
           <span
-            className="inline-block min-w-[150px] sm:min-w-[220px] transition-all duration-300 text-orange-400"
+            className="inline-block min-w-[100px] sm:min-w-[220px] transition-all duration-300 text-orange-400"
             style={{ opacity: visible ? 1 : 0, transform: visible ? 'translateY(0)' : 'translateY(-10px)' }}
           >
             {ROTATING_FOR[forIndex]}

@@ -57,7 +57,7 @@ const CTABanner: React.FC = () => {
               Free 14-Day Trial · No Credit Card Required
             </div>
 
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6 leading-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white mb-6 leading-tight" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
               Start Protecting Your
               <span className="block gradient-fire-text">Facilities Today</span>
             </h2>

@@ -90,18 +90,18 @@ const LiveNavigation: React.FC = () => {
               <h4 className="text-sm font-bold text-slate-900 dark:text-white">INC-041 · Smoke Alert in Warehouse B Bay 3</h4>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-6 w-full md:w-auto text-left border-t border-red-200 dark:border-red-900/50 md:border-t-0 pt-3 md:pt-0">
+          <div className="grid grid-cols-3 gap-2 sm:gap-6 w-full md:w-auto text-left border-t border-red-200 dark:border-red-900/50 md:border-t-0 pt-3 md:pt-0">
             <div>
               <p className="text-[10px] text-muted-foreground uppercase font-bold">Distance</p>
-              <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{distance}</p>
+              <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200">{distance}</p>
             </div>
             <div>
               <p className="text-[10px] text-muted-foreground uppercase font-bold">ETA</p>
-              <p className="text-sm font-bold text-red-600 dark:text-red-400">{eta}</p>
+              <p className="text-xs sm:text-sm font-bold text-red-600 dark:text-red-400">{eta}</p>
             </div>
             <div>
               <p className="text-[10px] text-muted-foreground uppercase font-bold">Status</p>
-              <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{routeStatus}</p>
+              <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 truncate max-w-[80px] sm:max-w-none" title={routeStatus}>{routeStatus}</p>
             </div>
           </div>
         </div>

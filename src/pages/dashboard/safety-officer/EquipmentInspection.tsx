@@ -150,7 +150,8 @@ const EquipmentInspection: React.FC = () => {
 
         {/* Equipment Table */}
         <div className="bg-card border border-border rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-muted/50 border-b border-border">
                 <tr className="text-xs text-muted-foreground">
@@ -207,6 +208,48 @@ const EquipmentInspection: React.FC = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card List View */}
+          <div className="block md:hidden divide-y divide-border">
+            {filtered.map(eq => (
+              <div key={eq.id} className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h4 className="font-semibold text-sm text-slate-900 dark:text-white">{eq.name}</h4>
+                    <p className="text-[10px] text-muted-foreground font-mono">{eq.id} · {eq.type}</p>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-medium shrink-0 ${statusConfig[eq.status]?.cls}`}>
+                    {statusConfig[eq.status]?.label}
+                  </span>
+                </div>
+                
+                <div className="flex items-start gap-1 text-xs">
+                  <MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-slate-700 dark:text-slate-300">{eq.location}</p>
+                    <p className="text-muted-foreground text-[11px]">{eq.floor}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-4 pt-1">
+                  <div className="text-[11px] text-muted-foreground">
+                    <p>Last: {eq.lastInspected}</p>
+                    <p className={eq.status === 'critical' || eq.status === 'offline' ? 'text-red-500 font-semibold' : ''}>
+                      Due: {eq.nextDue}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={eq.status === 'critical' || eq.status === 'offline' ? 'default' : 'outline'}
+                    className={`h-8 text-xs shrink-0 ${eq.status === 'critical' || eq.status === 'offline' ? 'gradient-fire text-white border-0 hover:opacity-90' : ''}`}
+                    onClick={() => handleStartInspection(eq)}
+                  >
+                    Inspect
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
           {filtered.length === 0 && (
             <div className="text-center py-12 text-muted-foreground">

@@ -159,7 +159,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
               <Menu className="w-5 h-5" />
             </button>
             {title && (
-              <h1 className="text-lg font-semibold" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
+              <h1 className="text-lg font-semibold truncate max-w-[120px] sm:max-w-[280px]" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                 {title}
               </h1>
             )}
