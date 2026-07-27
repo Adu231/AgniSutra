@@ -75,6 +75,7 @@ import EmergencyResponseDashboard from "./pages/dashboard/emergency-response/Das
 import EmergencyAlertCenter from "./pages/dashboard/emergency-response/AlertCenter";
 import EmergencyResponsePlan from "./pages/dashboard/emergency-response/ResponsePlan";
 import EmergencyIncidentClose from "./pages/dashboard/emergency-response/IncidentClose";
+import EmergencyLiveNavigation from "./pages/dashboard/emergency-response/LiveNavigation";
 
 // ── Fire Department Dashboard ─────────────────────────────────────────────────
 import FireDepartmentDashboard from "./pages/dashboard/fire-department/Dashboard";
@@ -201,6 +202,7 @@ const App = () => (
               <Route path="/dashboard/emergency-response/alerts" element={<ProtectedRoute><EmergencyAlertCenter /></ProtectedRoute>} />
               <Route path="/dashboard/emergency-response/plans" element={<ProtectedRoute><EmergencyResponsePlan /></ProtectedRoute>} />
               <Route path="/dashboard/emergency-response/close" element={<ProtectedRoute><EmergencyIncidentClose /></ProtectedRoute>} />
+              <Route path="/dashboard/emergency-response/navigation" element={<ProtectedRoute><EmergencyLiveNavigation /></ProtectedRoute>} />
 
               {/* ── Fire Department ───────────────────────────────────── */}
               <Route path="/dashboard/fire-department" element={<ProtectedRoute><FireDepartmentDashboard /></ProtectedRoute>} />

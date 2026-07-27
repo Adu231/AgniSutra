@@ -93,6 +93,7 @@ const ROLE_CONFIGS: Record<string, RoleConfig> = {
     nav: [
       { label: 'Alert Center', href: '/dashboard/emergency-response', Icon: Siren },
       { label: 'Active Alerts', href: '/dashboard/emergency-response/alerts', Icon: AlertOctagon },
+      { label: 'Navigate to Location', href: '/dashboard/emergency-response/navigation', Icon: Navigation },
       { label: 'Response Plans', href: '/dashboard/emergency-response/plans', Icon: Map },
       { label: 'Close Incidents', href: '/dashboard/emergency-response/close', Icon: CheckCircle },
     ],
