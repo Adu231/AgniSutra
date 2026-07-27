@@ -176,9 +176,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
             </button>
             <div className="flex items-center gap-2 pl-2 border-l border-border">
-              <div className="w-8 h-8 rounded-full gradient-fire flex items-center justify-center text-white text-xs font-bold">
+              <Link
+                to="/dashboard/profile"
+                className="w-8 h-8 rounded-full gradient-fire flex items-center justify-center text-white text-xs font-bold hover:ring-2 hover:ring-rose-500/50 dark:hover:ring-rose-400/50 transition-all cursor-pointer"
+                title="View Profile"
+              >
                 {user?.name?.charAt(0) || 'U'}
-              </div>
+              </Link>
               <div className="hidden sm:block">
                 <p className="text-sm font-medium leading-none">{user?.name}</p>
                 <p className="text-xs text-muted-foreground capitalize">{user?.role?.replace(/_/g, ' ')}</p>

@@ -294,9 +294,13 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({ children, tit
             >
               <Home className="w-4 h-4" />
             </Link>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold ${config.colorClass}`}>
+            <Link
+              to="/dashboard/profile"
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold hover:ring-2 hover:ring-rose-500/50 dark:hover:ring-rose-400/50 transition-all cursor-pointer ${config.colorClass}`}
+              title="View Profile"
+            >
               {user?.name?.charAt(0) || 'U'}
-            </div>
+            </Link>
           </div>
         </header>
 
