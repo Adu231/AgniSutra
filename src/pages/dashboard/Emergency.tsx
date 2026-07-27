@@ -46,7 +46,7 @@ const Emergency: React.FC = () => {
               </div>
             </div>
             <div className="flex gap-3">
-              <Button className="bg-white text-red-600 hover:bg-white/90 font-bold" onClick={() => toast.error('🚨 SOS Alert triggered! Notifying emergency teams...')}>
+              <Button className="bg-white text-red-600 hover:bg-white/90 font-bold" onClick={() => toast.error('SOS Alert triggered! Notifying emergency teams...')}>
                 <Radio className="w-4 h-4 mr-2" />Trigger SOS Alert
               </Button>
               <Button className="bg-white/20 border-white/30 text-white hover:bg-white/30 border" onClick={() => toast.success('Incident reported!')}>

@@ -163,7 +163,7 @@ const CloseTickets: React.FC = () => {
                   <p className="text-sm font-medium">{t.equipment} — {t.type}</p>
                   <p className="text-xs text-muted-foreground">{t.location} · Closed {t.closedAt}</p>
                 </div>
-                <span className="text-xs font-bold text-green-600">✓ {t.score}%</span>
+                <span className="text-xs font-bold text-green-600">{t.score}%</span>
               </div>
             ))}
           </div>

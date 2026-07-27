@@ -40,7 +40,7 @@ const FireInspectorDashboard: React.FC = () => {
       <div className="p-4 sm:p-6 space-y-6">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold">{greeting}, {user?.name?.split(' ')[0]} 👋</h2>
+            <h2 className="text-xl font-bold">{greeting}, {user?.name?.split(' ')[0]} </h2>
             <p className="text-sm text-muted-foreground">{user?.organization} · Fire Inspector</p>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800">
@@ -81,7 +81,10 @@ const FireInspectorDashboard: React.FC = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="day" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px' }} />
+                <Tooltip
+                  contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px', color: 'hsl(var(--foreground))' }}
+                  itemStyle={{ color: 'hsl(var(--foreground))' }}
+                  labelStyle={{ color: 'hsl(var(--muted-foreground))' }} />
                 <Bar dataKey="total" fill="hsl(var(--muted))" radius={[3, 3, 0, 0]} name="Assigned" />
                 <Bar dataKey="completed" fill="#f97316" radius={[3, 3, 0, 0]} name="Completed" />
               </BarChart>

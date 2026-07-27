@@ -95,12 +95,14 @@ const Login: React.FC = () => {
           </p>
           <div className="space-y-4">
             {[
-              '✓ AI-powered risk assessment & predictions',
-              '✓ Real-time IoT device monitoring',
-              '✓ Automated compliance tracking',
-              '✓ Emergency response coordination',
+              'AI-powered risk assessment & predictions',
+              'Real-time IoT device monitoring',
+              'Automated compliance tracking',
+              'Emergency response coordination',
             ].map(item => (
-              <p key={item} className="text-white/90 text-sm">{item}</p>
+              <p key={item} className="text-white/90 text-sm flex items-center gap-2">
+                <span className="text-green-400 font-bold">•</span> {item}
+              </p>
             ))}
           </div>
         </div>

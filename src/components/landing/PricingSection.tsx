@@ -3,11 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import { Check, Zap, ArrowRight, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PRICING_PLANS } from '@/constants';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 const PricingSection: React.FC = () => {
   const [annual, setAnnual] = useState(true);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const sectionRef = useRef<HTMLElement>(null);
+
+  const handleSelectPlan = (planId: string) => {
+    if (isAuthenticated) {
+      if (planId === 'free') {
+        toast.success('Free plan activated successfully!');
+        navigate('/dashboard/safety-officer');
+      } else {
+        toast.success(`Redirecting to upgrade checkout for ${planId.toUpperCase()} plan...`);
+        navigate(`/dashboard/admin/subscriptions/payment?org=DLF%20Commercial%20Properties&plan=${planId}`);
+      }
+    } else {
+      toast.info('Please register to select a plan.');
+      navigate('/register');
+    }
+  };
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -123,7 +141,7 @@ const PricingSection: React.FC = () => {
                         : 'border-2 border-red-600 text-red-600 dark:text-red-400 dark:border-red-400 hover:bg-red-600 hover:text-white'
                     }`}
                     variant={plan.highlighted ? 'secondary' : 'outline'}
-                    onClick={() => navigate('/register')}
+                    onClick={() => handleSelectPlan(plan.id)}
                   >
                     {plan.id === 'free' ? 'Start Free' : 'Start Free Trial'}
                     <ArrowRight className="w-4 h-4 ml-2" />

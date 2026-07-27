@@ -2,10 +2,20 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Shield, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 const CTABanner: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const sectionRef = useRef<HTMLElement>(null);
+
+  const handleStartTrial = () => {
+    if (isAuthenticated) {
+      navigate('/dashboard/admin/subscriptions/payment?org=DLF%20Commercial%20Properties&plan=professional');
+    } else {
+      navigate('/register');
+    }
+  };
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -60,7 +70,7 @@ const CTABanner: React.FC = () => {
               <Button
                 size="lg"
                 className="gradient-fire text-white border-0 text-base font-semibold px-10 py-4 h-auto fire-glow hover:scale-105 transition-all group"
-                onClick={() => navigate('/register')}
+                onClick={handleStartTrial}
               >
                 Get Started Free
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />

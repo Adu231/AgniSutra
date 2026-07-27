@@ -4,7 +4,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { BLOG_POSTS } from '@/constants';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Calendar, Clock, Tag, Share2, Twitter, Linkedin } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Tag, Share2, Twitter, Linkedin, Check } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BlogPost: React.FC = () => {
@@ -92,7 +92,7 @@ const BlogPost: React.FC = () => {
               <ul className="list-none space-y-3 mb-6">
                 {['Digital transformation of fire safety delivers measurable ROI within 3 months', 'AI-powered risk assessment identifies 40% more hazards than manual audits', 'Real-time IoT monitoring reduces equipment downtime by 60%', 'Automated compliance reporting saves 15+ hours per inspector per month'].map(point => (
                   <li key={point} className="flex items-start gap-2 text-muted-foreground">
-                    <span className="text-green-500 mt-0.5">✓</span> {point}
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> {point}
                   </li>
                 ))}
               </ul>

@@ -32,12 +32,35 @@ const Pricing: React.FC = () => {
 
   const handleSelectPlan = (planId: string) => {
     if (isAuthenticated) {
-      toast.success(`Redirecting to upgrade checkout for ${planId.toUpperCase()} plan...`);
-      navigate(`/dashboard/admin/subscriptions/payment?org=DLF%20Commercial%20Properties&plan=${planId}`);
+      if (planId === 'free') {
+        toast.success('Free plan activated successfully!');
+        navigate('/dashboard/safety-officer');
+      } else {
+        toast.success(`Redirecting to upgrade checkout for ${planId.toUpperCase()} plan...`);
+        navigate(`/dashboard/admin/subscriptions/payment?org=DLF%20Commercial%20Properties&plan=${planId}`);
+      }
     } else {
       toast.info('Please register to select a plan.');
       navigate('/register');
     }
+  };
+
+  const renderComparisonCell = (val: string, isHighlight: boolean = false) => {
+    if (val === '✓') {
+      return <Check className={`w-4 h-4 mx-auto ${isHighlight ? 'text-current' : 'text-green-500'}`} />;
+    }
+    if (val === '✗') {
+      return <span className="text-muted-foreground/30 font-light">—</span>;
+    }
+    if (val.startsWith('✓ ')) {
+      return (
+        <span className="inline-flex items-center gap-1 justify-center">
+          <Check className={`w-3.5 h-3.5 shrink-0 ${isHighlight ? 'text-current' : 'text-green-500'}`} />
+          <span>{val.slice(2)}</span>
+        </span>
+      );
+    }
+    return val;
   };
 
   return (
@@ -144,9 +167,9 @@ const Pricing: React.FC = () => {
                   {comparison.map((row, i) => (
                     <tr key={row.feature} className={`border-t border-border ${i % 2 === 0 ? '' : 'bg-muted/20'}`}>
                       <td className="px-6 py-3 font-medium">{row.feature}</td>
-                      <td className="px-6 py-3 text-center text-muted-foreground">{row.starter}</td>
-                      <td className="px-6 py-3 text-center font-medium text-red-600 dark:text-red-400">{row.professional}</td>
-                      <td className="px-6 py-3 text-center">{row.enterprise}</td>
+                      <td className="px-6 py-3 text-center text-muted-foreground">{renderComparisonCell(row.starter)}</td>
+                      <td className="px-6 py-3 text-center font-medium text-red-600 dark:text-red-400">{renderComparisonCell(row.professional, true)}</td>
+                      <td className="px-6 py-3 text-center">{renderComparisonCell(row.enterprise)}</td>
                     </tr>
                   ))}
                 </tbody>

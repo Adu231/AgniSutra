@@ -56,7 +56,7 @@ const SafetyOfficerDashboard: React.FC = () => {
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-              {greeting}, {user?.name?.split(' ')[0]} 👋
+              {greeting}, {user?.name?.split(' ')[0]} 
             </h2>
             <p className="text-sm text-muted-foreground mt-0.5">{user?.organization} · Safety Officer</p>
           </div>
@@ -120,7 +120,10 @@ const SafetyOfficerDashboard: React.FC = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
                 <YAxis domain={[60, 100]} tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
+                <Tooltip
+                  contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px', color: 'hsl(var(--foreground))' }}
+                  itemStyle={{ color: 'hsl(var(--foreground))' }}
+                  labelStyle={{ color: 'hsl(var(--muted-foreground))' }} />
                 <Area type="monotone" dataKey="score" stroke="#dc2626" strokeWidth={2.5} fill="url(#soGrad)" name="Compliance %" />
               </AreaChart>
             </ResponsiveContainer>

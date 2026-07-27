@@ -74,7 +74,10 @@ const RiskAssessment: React.FC = () => {
                 <PolarGrid stroke="hsl(var(--border))" />
                 <PolarAngleAxis dataKey="factor" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} />
                 <Radar name="Score" dataKey="score" stroke="#dc2626" fill="#dc2626" fillOpacity={0.2} strokeWidth={2} />
-                <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
+                <Tooltip
+                  contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px', color: 'hsl(var(--foreground))' }}
+                  itemStyle={{ color: 'hsl(var(--foreground))' }}
+                  labelStyle={{ color: 'hsl(var(--muted-foreground))' }} />
               </RadarChart>
             </ResponsiveContainer>
           </div>
@@ -87,7 +90,10 @@ const RiskAssessment: React.FC = () => {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} />
                 <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} width={130} />
-                <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
+                <Tooltip
+                  contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '11px', color: 'hsl(var(--foreground))' }}
+                  itemStyle={{ color: 'hsl(var(--foreground))' }}
+                  labelStyle={{ color: 'hsl(var(--muted-foreground))' }} />
                 <Bar dataKey="score" fill="#dc2626" radius={[0, 4, 4, 0]} name="Risk Score" />
               </BarChart>
             </ResponsiveContainer>

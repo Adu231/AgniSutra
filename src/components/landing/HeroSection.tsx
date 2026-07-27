@@ -3,15 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Shield, Zap, BarChart3, Play, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import heroBg from '@/assets/hero-bg.jpg';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ROTATING_WORDS = ['Faster', 'Smarter', 'Safer', 'Proactive', 'Intelligent'];
 const ROTATING_FOR = ['Facilities', 'Industries', 'Hospitals', 'Airports', 'Fire Teams'];
 
 const HeroSection: React.FC = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [wordIndex, setWordIndex] = useState(0);
   const [forIndex, setForIndex] = useState(0);
   const [visible, setVisible] = useState(true);
+
+  const handleStartTrial = () => {
+    if (isAuthenticated) {
+      navigate('/dashboard/admin/subscriptions/payment?org=DLF%20Commercial%20Properties&plan=professional');
+    } else {
+      navigate('/register');
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -87,7 +97,7 @@ const HeroSection: React.FC = () => {
           <Button
             size="lg"
             className="gradient-fire text-white border-0 text-base font-semibold px-8 py-4 h-auto fire-glow hover:scale-105 transition-all duration-300 group"
-            onClick={() => navigate('/register')}
+            onClick={handleStartTrial}
           >
             Start Free Trial
             <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />

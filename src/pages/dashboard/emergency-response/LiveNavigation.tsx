@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
-import { Navigation, MapPin, DoorOpen, Users, Droplets, ArrowUp } from 'lucide-react';
+import { Navigation, MapPin, DoorOpen, Users, Droplets, ArrowUp, Flame } from 'lucide-react';
 
 const floors = ['Ground Floor', '1st Floor', '2nd Floor', '3rd Floor'];
 
@@ -134,7 +134,7 @@ const LiveNavigation: React.FC = () => {
                 style={{ left: `${floor.hazard.x}%`, top: `${floor.hazard.y}%`, transform: 'translate(-50%, -50%)' }}
               >
                 <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center shadow-xl shadow-red-500/50">
-                  <span className="text-white text-lg">🔥</span>
+                  <Flame className="w-4 h-4 text-white" />
                 </div>
                 <span className="text-xs font-bold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-1 rounded">{floor.hazard.label}</span>
               </div>
