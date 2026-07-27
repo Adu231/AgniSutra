@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { getRoleRedirect } from "@/constants";
 import ScrollToTop from "@/components/layout/ScrollToTop";
+import { AIChatBot } from "./components/ui/AIChatBot";
 
 // Public Pages
 import Index from "./pages/Index";
@@ -237,6 +238,7 @@ const App = () => (
 
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <AIChatBot />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
