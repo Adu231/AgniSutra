@@ -28,6 +28,105 @@ export const AIChatBot: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // Drag-and-drop states
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+  const startPos = useRef({ x: 0, y: 0 });
+  const dragThreshold = 6;
+  const moved = useRef(false);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX, y: e.clientY };
+    startPos.current = { ...position };
+    moved.current = false;
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    const touch = e.touches[0];
+    dragStart.current = { x: touch.clientX, y: touch.clientY };
+    startPos.current = { ...position };
+    moved.current = false;
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      const dx = e.clientX - dragStart.current.x;
+      const dy = e.clientY - dragStart.current.y;
+
+      if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) {
+        moved.current = true;
+      }
+
+      let newX = startPos.current.x + dx;
+      let newY = startPos.current.y + dy;
+
+      // Restrict button from going off screen boundaries
+      const buttonSize = 56;
+      const margin = 24;
+      const maxLeftOffset = -(window.innerWidth - buttonSize - margin * 2);
+      const maxRightOffset = 0;
+      const maxTopOffset = -(window.innerHeight - buttonSize - margin * 2);
+      const maxBottomOffset = 0;
+
+      newX = Math.max(maxLeftOffset, Math.min(maxRightOffset, newX));
+      newY = Math.max(maxTopOffset, Math.min(maxBottomOffset, newY));
+
+      setPosition({ x: newX, y: newY });
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isDragging) return;
+      const touch = e.touches[0];
+      const dx = touch.clientX - dragStart.current.x;
+      const dy = touch.clientY - dragStart.current.y;
+
+      if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) {
+        moved.current = true;
+      }
+
+      let newX = startPos.current.x + dx;
+      let newY = startPos.current.y + dy;
+
+      const buttonSize = 56;
+      const margin = 24;
+      const maxLeftOffset = -(window.innerWidth - buttonSize - margin * 2);
+      const maxRightOffset = 0;
+      const maxTopOffset = -(window.innerHeight - buttonSize - margin * 2);
+      const maxBottomOffset = 0;
+
+      newX = Math.max(maxLeftOffset, Math.min(maxRightOffset, newX));
+      newY = Math.max(maxTopOffset, Math.min(maxBottomOffset, newY));
+
+      setPosition({ x: newX, y: newY });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('touchmove', handleTouchMove);
+      window.addEventListener('touchend', handleTouchEnd);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging]);
+
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -168,8 +267,21 @@ export const AIChatBot: React.FC = () => {
 
       {/* Floating Button Logo */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 rounded-full gradient-fire text-white flex items-center justify-center shadow-xl shadow-rose-500/20 hover:scale-105 hover:rotate-6 transition-all duration-300 fire-glow"
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onClick={(e) => {
+          if (moved.current) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+          setIsOpen(!isOpen);
+        }}
+        style={{
+          transform: `translate(${position.x}px, ${position.y}px)`,
+          touchAction: 'none',
+        }}
+        className="w-14 h-14 rounded-full gradient-fire text-white flex items-center justify-center shadow-xl shadow-rose-500/20 hover:scale-105 transition-all duration-300 fire-glow select-none"
         title="AgniSutra Copilot Assistant"
       >
         {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6 animate-pulse" />}
