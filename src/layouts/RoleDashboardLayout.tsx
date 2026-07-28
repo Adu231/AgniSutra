@@ -140,15 +140,25 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({ children, tit
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const [avatar, setAvatar] = useState<string | null>(localStorage.getItem('user_avatar'));
+  const [avatar, setAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      setAvatar(localStorage.getItem(`user_avatar_${user.id}`));
+    } else {
+      setAvatar(null);
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     const handleProfileUpdate = () => {
-      setAvatar(localStorage.getItem('user_avatar'));
+      if (user?.id) {
+        setAvatar(localStorage.getItem(`user_avatar_${user.id}`));
+      }
     };
     window.addEventListener('profile-update', handleProfileUpdate);
     return () => window.removeEventListener('profile-update', handleProfileUpdate);
-  }, []);
+  }, [user?.id]);
 
   const roleKey = user?.role || 'safety_officer';
   const config = ROLE_CONFIGS[roleKey] || ROLE_CONFIGS.safety_officer;

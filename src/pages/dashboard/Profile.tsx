@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,16 @@ const Profile: React.FC = () => {
     setTimeout(() => setSaved(false), 3000);
   };
 
-  const [avatar, setAvatar] = useState<string | null>(localStorage.getItem('user_avatar'));
+  const [avatar, setAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      setAvatar(localStorage.getItem(`user_avatar_${user.id}`));
+    } else {
+      setAvatar(null);
+    }
+  }, [user?.id]);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +55,9 @@ const Profile: React.FC = () => {
     reader.onload = () => {
       const result = reader.result as string;
       setAvatar(result);
-      localStorage.setItem('user_avatar', result);
+      if (user?.id) {
+        localStorage.setItem(`user_avatar_${user.id}`, result);
+      }
       toast.success('Profile picture updated successfully!');
       // Dispatch custom event to notify layout headers/sidebars
       window.dispatchEvent(new Event('profile-update'));

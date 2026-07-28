@@ -27,15 +27,25 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const [avatar, setAvatar] = useState<string | null>(localStorage.getItem('user_avatar'));
+  const [avatar, setAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      setAvatar(localStorage.getItem(`user_avatar_${user.id}`));
+    } else {
+      setAvatar(null);
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     const handleProfileUpdate = () => {
-      setAvatar(localStorage.getItem('user_avatar'));
+      if (user?.id) {
+        setAvatar(localStorage.getItem(`user_avatar_${user.id}`));
+      }
     };
     window.addEventListener('profile-update', handleProfileUpdate);
     return () => window.removeEventListener('profile-update', handleProfileUpdate);
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     setMobileOpen(false);
