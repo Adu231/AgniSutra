@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
 
   const isActive = (href: string) => location.pathname === href;
 
-  const isHomeAndNotScrolled = location.pathname === '/' && !scrolled;
+  const isHomeAndNotScrolled = (location.pathname === '/' || location.pathname.startsWith('/solutions/')) && !scrolled;
 
   return (
     <header

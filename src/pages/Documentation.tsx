@@ -117,7 +117,7 @@ const Documentation: React.FC = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row gap-8 text-left">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-10 flex flex-col md:flex-row gap-8 text-left">
         {/* Left Sidebar */}
         <div className="w-full md:w-64 flex-shrink-0 space-y-6">
           <div className="relative">

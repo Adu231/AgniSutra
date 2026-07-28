@@ -86,10 +86,7 @@ const WorkflowSection: React.FC = () => {
             const Icon = step.icon;
             return (
               <div key={step.step} className="scroll-reveal stagger-child relative">
-                {/* Connector line */}
-                {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-12 left-full w-full h-0.5 bg-gradient-to-r from-border to-transparent z-0" style={{ width: 'calc(100% - 3rem)' }} />
-                )}
+
                 <div className="relative z-10 flex flex-col items-center lg:items-start text-center lg:text-left">
                   <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${step.bg} border border-border flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                     <Icon className={`w-7 h-7 ${step.color}`} />
