@@ -27,6 +27,16 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const [avatar, setAvatar] = useState<string | null>(localStorage.getItem('user_avatar'));
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      setAvatar(localStorage.getItem('user_avatar'));
+    };
+    window.addEventListener('profile-update', handleProfileUpdate);
+    return () => window.removeEventListener('profile-update', handleProfileUpdate);
+  }, []);
+
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
@@ -117,9 +127,13 @@ const Navbar: React.FC = () => {
                     <button className={`flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors ${
                       isHomeAndNotScrolled ? 'hover:bg-white/10' : 'hover:bg-muted'
                     }`}>
-                      <div className="w-8 h-8 rounded-full gradient-fire flex items-center justify-center text-white text-xs font-bold">
-                        {user?.name?.charAt(0) || 'U'}
-                      </div>
+                      {avatar ? (
+                        <img src={avatar} alt="User Avatar" className="w-8 h-8 rounded-full object-cover border border-border" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full gradient-fire flex items-center justify-center text-white text-xs font-bold">
+                          {user?.name?.charAt(0) || 'U'}
+                        </div>
+                      )}
                       <span className={`hidden md:block text-sm font-medium max-w-[100px] truncate ${
                         isHomeAndNotScrolled ? 'text-white' : 'text-foreground'
                       }`}>{user?.name}</span>

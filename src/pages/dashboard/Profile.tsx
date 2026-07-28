@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import RoleDashboardLayout from '@/layouts/RoleDashboardLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -30,6 +30,34 @@ const Profile: React.FC = () => {
     setTimeout(() => setSaved(false), 3000);
   };
 
+  const [avatar, setAvatar] = useState<string | null>(localStorage.getItem('user_avatar'));
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      setAvatar(result);
+      localStorage.setItem('user_avatar', result);
+      toast.success('Profile picture updated successfully!');
+      // Dispatch custom event to notify layout headers/sidebars
+      window.dispatchEvent(new Event('profile-update'));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
   const roleDisplay = user?.role?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || '';
 
   return (
@@ -38,12 +66,33 @@ const Profile: React.FC = () => {
         {/* Header Card */}
         <div className="bg-card border border-border rounded-2xl p-6 mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-6">
           <div className="relative">
-            <div className="w-20 h-20 rounded-2xl gradient-fire flex items-center justify-center text-white text-3xl font-black">
-              {form.name.charAt(0)}
-            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleAvatarChange}
+              accept="image/*"
+              className="hidden"
+            />
+            {avatar ? (
+              <img
+                src={avatar}
+                alt="Profile Avatar"
+                className="w-20 h-20 rounded-2xl object-cover border border-border cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={triggerFileInput}
+              />
+            ) : (
+              <div
+                onClick={triggerFileInput}
+                className="w-20 h-20 rounded-2xl gradient-fire flex items-center justify-center text-white text-3xl font-black cursor-pointer hover:opacity-90 transition-opacity"
+              >
+                {form.name.charAt(0)}
+              </div>
+            )}
             <button
-              onClick={() => toast.success('Profile picture updated successfully!')}
-              className="absolute -bottom-2 -right-2 w-7 h-7 bg-card border border-border rounded-full flex items-center justify-center hover:bg-muted transition-colors"
+              onClick={triggerFileInput}
+              type="button"
+              className="absolute -bottom-2 -right-2 w-7 h-7 bg-card border border-border rounded-full flex items-center justify-center hover:bg-muted transition-colors shadow-sm"
+              title="Upload Photo"
             >
               <Camera className="w-3.5 h-3.5 text-muted-foreground" />
             </button>

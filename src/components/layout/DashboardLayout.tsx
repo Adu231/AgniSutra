@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Flame, ClipboardCheck, AlertTriangle, Siren,
@@ -26,6 +26,16 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [avatar, setAvatar] = useState<string | null>(localStorage.getItem('user_avatar'));
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      setAvatar(localStorage.getItem('user_avatar'));
+    };
+    window.addEventListener('profile-update', handleProfileUpdate);
+    return () => window.removeEventListener('profile-update', handleProfileUpdate);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -178,10 +188,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title }) =>
             <div className="flex items-center gap-2 pl-2 border-l border-border">
               <Link
                 to="/dashboard/profile"
-                className="w-8 h-8 rounded-full gradient-fire flex items-center justify-center text-white text-xs font-bold hover:ring-2 hover:ring-rose-500/50 dark:hover:ring-rose-400/50 transition-all cursor-pointer"
+                className="w-8 h-8 rounded-full gradient-fire flex items-center justify-center text-white text-xs font-bold hover:ring-2 hover:ring-rose-500/50 dark:hover:ring-rose-400/50 transition-all cursor-pointer overflow-hidden"
                 title="View Profile"
               >
-                {user?.name?.charAt(0) || 'U'}
+                {avatar ? (
+                  <img src={avatar} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  user?.name?.charAt(0) || 'U'
+                )}
               </Link>
               <div className="hidden sm:block">
                 <p className="text-sm font-medium leading-none">{user?.name}</p>

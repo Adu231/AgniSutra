@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Flame, LogOut, User, Settings, Menu, X, Moon, Sun, ChevronRight,
@@ -139,6 +139,16 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({ children, tit
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const [avatar, setAvatar] = useState<string | null>(localStorage.getItem('user_avatar'));
+
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      setAvatar(localStorage.getItem('user_avatar'));
+    };
+    window.addEventListener('profile-update', handleProfileUpdate);
+    return () => window.removeEventListener('profile-update', handleProfileUpdate);
+  }, []);
 
   const roleKey = user?.role || 'safety_officer';
   const config = ROLE_CONFIGS[roleKey] || ROLE_CONFIGS.safety_officer;
@@ -296,10 +306,14 @@ const RoleDashboardLayout: React.FC<RoleDashboardLayoutProps> = ({ children, tit
             </Link>
             <Link
               to="/dashboard/profile"
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold hover:ring-2 hover:ring-rose-500/50 dark:hover:ring-rose-400/50 transition-all cursor-pointer ${config.colorClass}`}
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold hover:ring-2 hover:ring-rose-500/50 dark:hover:ring-rose-400/50 transition-all cursor-pointer overflow-hidden ${config.colorClass}`}
               title="View Profile"
             >
-              {user?.name?.charAt(0) || 'U'}
+              {avatar ? (
+                <img src={avatar} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                user?.name?.charAt(0) || 'U'
+              )}
             </Link>
           </div>
         </header>
